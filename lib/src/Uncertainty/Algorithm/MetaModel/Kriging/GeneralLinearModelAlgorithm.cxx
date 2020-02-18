@@ -843,6 +843,16 @@ Scalar GeneralLinearModelAlgorithm::computeLogIntegratedLikelihoodPenalization()
       // bottom right corner
       iTheta(inputDimension, inputDimension) = size - beta_.getSize();
 
+      LOGWARN(OSS() <<  "iTheta(0,0)=" << iTheta(0,0));
+      LOGWARN(OSS() <<  "iTheta(0,1)=" << iTheta(0,1));
+      LOGWARN(OSS() <<  "iTheta(0,2)=" << iTheta(0,2));
+      LOGWARN(OSS() <<  "iTheta(1,0)=" << iTheta(1,0));
+      LOGWARN(OSS() <<  "iTheta(1,1)=" << iTheta(1,1));
+      LOGWARN(OSS() <<  "iTheta(1,2)=" << iTheta(1,2));
+      LOGWARN(OSS() <<  "iTheta(2,0)=" << iTheta(2,0));
+      LOGWARN(OSS() <<  "iTheta(2,1)=" << iTheta(2,1));
+      LOGWARN(OSS() <<  "iTheta(2,2)=" << iTheta(2,2));
+
       Scalar sign = 1.0;
       penalizationFactor = 0.5 * iTheta.computeLogAbsoluteDeterminant(sign, false);
       break;
