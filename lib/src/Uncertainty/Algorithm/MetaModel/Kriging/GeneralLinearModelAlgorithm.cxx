@@ -932,14 +932,22 @@ Point GeneralLinearModelAlgorithm::computeReducedLogLikelihood(const Point & par
     const Scalar penalizationFactor = computeLogIntegratedLikelihoodPenalization();
     LOGINFO(OSS(false) << "penalizationFactor=" << penalizationFactor);
 
+    //BREAKPOINT
+    LOGWARN(OSS() <<  "penalizationFactor = " << penalizationFactor);
+
     // Compute logarithm of the integrated likelihood.
     const Scalar logIntegratedLikelihood = -0.5 * logLikelihood - 0.5 * (size - beta_.getSize()) * std::log(rho_.normSquare());
+
+    //BREAKPOINT
+    LOGWARN(OSS() <<  "logIntegratedLikelihood = " << logIntegratedLikelihood);
+
     logLikelihood = logIntegratedLikelihood + penalizationFactor;
   }
   LOGINFO(OSS(false) << "log-likelihood=" << logLikelihood);
   lastReducedLogLikelihood_ = logLikelihood;
   return Point(1, logLikelihood);
 }
+
 
 
 Scalar GeneralLinearModelAlgorithm::computeLapackLogDeterminantCholesky() const
