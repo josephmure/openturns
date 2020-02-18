@@ -29,6 +29,7 @@ g = Gu(input_sample, output_sample, BASE, noyau_tensorise, prior='reference', pa
 g.set_scale([1.0,1.0])
 print("JOSEPH log likelihood = ", g._current_log_likelihood)
 print("JOSEPH log prior = ", g._current_log_prior)
+print("JOSEPH optimized function = ", g._current_log_likelihood + g._current_log_prior)
 
 noyau_tensorise = ot.ProductCovarianceModel([ot.MaternModel([1.0], AMPLITUDE, SCALE[0]), ot.MaternModel([1.0], AMPLITUDE, SCALE[1])])
 noyau_tensorise.setScaleParametrization(noyau_tensorise.STANDARD)
