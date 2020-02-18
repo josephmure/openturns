@@ -253,8 +253,13 @@ class Gu:
     
     def update_current_log_likelihood(self):        
         mahalonobis = np.transpose(self._restricted_output) @ self._current_correlation_inverse @ self._restricted_output
-        
+        print('mahalonobis = ', mahalonobis)
         log_likelihood = -0.5 * np.log(np.linalg.det(self._current_correlation_matrix))
+        
+        print("julien_loglikelihood = ", log_likelihood + self._additional_loglikelihood_term)
+        print("julien_nminusp_term = ", 0.5 * self._restricted_output.size * np.log(mahalonobis))
+        
+        
         log_likelihood -= 0.5 * self._restricted_output.size * np.log(mahalonobis)
         
         # To be consistent with Julien's implementation

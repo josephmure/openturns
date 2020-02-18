@@ -888,6 +888,9 @@ Point GeneralLinearModelAlgorithm::computeReducedLogLikelihood(const Point & par
     logLikelihood = computeHMatLogDeterminantCholesky();
   LOGDEBUG(OSS(false) << "log-determinant=" << logLikelihood << ", rho=" << rho_);
 
+  //BREAKPOINT
+  LOGWARN(OSS() <<  "rho_.normSquare()=" << rho_.normSquare());
+
   // If no prior is used
   if (scalePrior_ == NONE)
   {
@@ -939,6 +942,15 @@ Point GeneralLinearModelAlgorithm::computeReducedLogLikelihood(const Point & par
     const Scalar logIntegratedLikelihood = -0.5 * logLikelihood - 0.5 * (size - beta_.getSize()) * std::log(rho_.normSquare());
 
     //BREAKPOINT
+    LOGWARN(OSS() <<  "logIntegratedLikelihood_term1= " << -0.5 * logLikelihood);
+
+    //BREAKPOINT
+    LOGWARN(OSS() <<  "logIntegratedLikelihood_term2= " << -0.5 * (size - beta_.getSize()) * std::log(rho_.normSquare()));
+
+    //BREAKPOINT
+    LOGWARN(OSS() <<  "mahalonobis= " << rho_.normSquare());
+
+    //BREAKPOINT
     LOGWARN(OSS() <<  "logIntegratedLikelihood = " << logIntegratedLikelihood);
 
     logLikelihood = logIntegratedLikelihood + penalizationFactor;
@@ -957,6 +969,10 @@ Scalar GeneralLinearModelAlgorithm::computeLapackLogDeterminantCholesky() const
 
   LOGDEBUG("Discretize the covariance model");
   CovarianceMatrix C(reducedCovarianceModel_.discretize(normalizedInputSample_));
+
+  //BREAKPOINT
+  LOGWARN(OSS() <<  "C= " << C);
+
   if (noise_.getDimension() > 0)
   {
     LOGDEBUG("Add noise to the covariance matrix");
@@ -997,6 +1013,11 @@ Scalar GeneralLinearModelAlgorithm::computeLapackLogDeterminantCholesky() const
   LOGDEBUG(OSS(false) << "y=" << y);
   // rho = L^{-1}y
   LOGDEBUG("Solve L.rho = y");
+
+  //BREAKPOINT
+  LOGWARN(OSS() <<  "y= " << y);
+
+
   rho_ = covarianceCholeskyFactor_.solveLinearSystem(y);
   LOGDEBUG(OSS(false) << "rho_=L^{-1}y=" << rho_);
   // If trend to estimate
