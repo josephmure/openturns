@@ -843,15 +843,7 @@ Scalar GeneralLinearModelAlgorithm::computeLogIntegratedLikelihoodPenalization()
       // bottom right corner
       iTheta(inputDimension, inputDimension) = size - beta_.getSize();
 
-      LOGWARN(OSS() <<  "iTheta(0,0)=" << iTheta(0,0));
-      LOGWARN(OSS() <<  "iTheta(0,1)=" << iTheta(0,1));
-      LOGWARN(OSS() <<  "iTheta(0,2)=" << iTheta(0,2));
-      LOGWARN(OSS() <<  "iTheta(1,0)=" << iTheta(1,0));
-      LOGWARN(OSS() <<  "iTheta(1,1)=" << iTheta(1,1));
-      LOGWARN(OSS() <<  "iTheta(1,2)=" << iTheta(1,2));
-      LOGWARN(OSS() <<  "iTheta(2,0)=" << iTheta(2,0));
-      LOGWARN(OSS() <<  "iTheta(2,1)=" << iTheta(2,1));
-      LOGWARN(OSS() <<  "iTheta(2,2)=" << iTheta(2,2));
+      LOGWARN(OSS() <<  "iTheta=" << iTheta);
 
       Scalar sign = 1.0;
       penalizationFactor = 0.5 * iTheta.computeLogAbsoluteDeterminant(sign, false);
@@ -887,9 +879,6 @@ Point GeneralLinearModelAlgorithm::computeReducedLogLikelihood(const Point & par
   else
     logLikelihood = computeHMatLogDeterminantCholesky();
   LOGDEBUG(OSS(false) << "log-determinant=" << logLikelihood << ", rho=" << rho_);
-
-  //BREAKPOINT
-  LOGWARN(OSS() <<  "rho_.normSquare()=" << rho_.normSquare());
 
   // If no prior is used
   if (scalePrior_ == NONE)
@@ -942,15 +931,6 @@ Point GeneralLinearModelAlgorithm::computeReducedLogLikelihood(const Point & par
     const Scalar logIntegratedLikelihood = -0.5 * logLikelihood - 0.5 * (size - beta_.getSize()) * std::log(rho_.normSquare());
 
     //BREAKPOINT
-    LOGWARN(OSS() <<  "logIntegratedLikelihood_term1= " << -0.5 * logLikelihood);
-
-    //BREAKPOINT
-    LOGWARN(OSS() <<  "logIntegratedLikelihood_term2= " << -0.5 * (size - beta_.getSize()) * std::log(rho_.normSquare()));
-
-    //BREAKPOINT
-    LOGWARN(OSS() <<  "mahalonobis= " << rho_.normSquare());
-
-    //BREAKPOINT
     LOGWARN(OSS() <<  "logIntegratedLikelihood = " << logIntegratedLikelihood);
 
     logLikelihood = logIntegratedLikelihood + penalizationFactor;
@@ -969,9 +949,6 @@ Scalar GeneralLinearModelAlgorithm::computeLapackLogDeterminantCholesky() const
 
   LOGDEBUG("Discretize the covariance model");
   CovarianceMatrix C(reducedCovarianceModel_.discretize(normalizedInputSample_));
-
-  //BREAKPOINT
-  LOGWARN(OSS() <<  "C= " << C);
 
   if (noise_.getDimension() > 0)
   {
@@ -1013,9 +990,6 @@ Scalar GeneralLinearModelAlgorithm::computeLapackLogDeterminantCholesky() const
   LOGDEBUG(OSS(false) << "y=" << y);
   // rho = L^{-1}y
   LOGDEBUG("Solve L.rho = y");
-
-  //BREAKPOINT
-  LOGWARN(OSS() <<  "y= " << y);
 
 
   rho_ = covarianceCholeskyFactor_.solveLinearSystem(y);

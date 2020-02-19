@@ -28,8 +28,6 @@ g.set_scale(SCALE)
 print("JOSEPH log likelihood = ", g._current_log_likelihood)
 print("JOSEPH log prior = ", g._current_log_prior)
 print("JOSEPH optimized function = ", g._current_log_likelihood + g._current_log_prior)
-print("correlation matrix = ", g.compute_matern_correlation_matrix())
-print("OT correlation matrix = ", noyau_tensorise.discretize(input_sample))
 
 
 noyau_tensorise = ot.ProductCovarianceModel([ot.MaternModel([SCALE[0]], AMPLITUDE, NU), 
