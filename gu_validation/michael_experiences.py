@@ -6,7 +6,7 @@ Created on Mon Feb 17 11:37:14 2020
 @author: osboxes
 """
 
-import openturns as ot
+from Classe_Gu import *
 
 sampleSize = 6
 dimension = 1
@@ -31,7 +31,7 @@ covarianceModel = ot.MaternModel([1], [4.123456], 0.5)
 covarianceModelCopy = ot.MaternModel(covarianceModel)
 covarianceModel.setScaleParametrization(parametrization)
 
-algo = ot.KrigingAlgorithm(X, Y, covarianceModel, basis)
+algo = ot.KrigingAlgorithm(X, Y, covarianceModel, basis, False)
 algo.setScalePrior(prior)
 algo.run()
 
@@ -44,18 +44,22 @@ scaleOTGU = result.getCovarianceModel().getParameter()
 print('OpenTURNS/Gu : parameters=', scaleOTGU)
 rllfunction = algo.getReducedLogLikelihoodFunction()
 objective_value = rllfunction(scaleOTGU)
-print("Objectif value=", objective_value)
+print("Objectif value of OpenTURNS/Gu=", objective_value[0])
+print("")
+
 
 # Version Joseph/Gu
-
+X = ot.Sample(X)
+Y = ot.Sample(Y)
 essai = Gu(X, Y, basis, covarianceModelCopy, 'reference', 'standard')
 result = essai.optimize_scale()
 scaleJOGU = result.x
 print("Joseph/Gu : scale=", scaleJOGU)
 objective_value = essai.set_scale(scaleJOGU)
 print("Objectif value sur Optimum Joseph/Gu=", objective_value)
+print("")
 
 # Validation de la fonction objectif
-scale = ot.Point([0.5])
-print("Objectif value sur Optimum OpenTURNS/Gu=", rllfunction(scale))
-print("Objectif value sur Optimum Joseph/Gu=", essai.set_scale(scale))
+#scale = ot.Point([0.5])
+#print("Objectif value sur Optimum OpenTURNS/Gu=", rllfunction(scale))
+#print("Objectif value sur Optimum Joseph/Gu=", essai.set_scale(scale))
