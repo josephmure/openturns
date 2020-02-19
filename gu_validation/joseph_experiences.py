@@ -41,8 +41,19 @@ print(g.compute_matern_derivative_matrix(1))
 
 noyau_tensorise = ot.ProductCovarianceModel([ot.MaternModel([SCALE[0]], AMPLITUDE, NU), 
                                              ot.MaternModel([SCALE[1]], AMPLITUDE, NU)])
-noyau_tensorise.setScaleParametrization(noyau_tensorise.STANDARD)
+#noyau_tensorise.setScaleParametrization(noyau_tensorise.STANDARD)
 algo = ot.KrigingAlgorithm(input_sample, output_sample, noyau_tensorise, BASE, False)
 algo.setScalePrior(ot.GeneralLinearModelAlgorithm.REFERENCE)
 fonction_optimisee = algo.getReducedLogLikelihoodFunction()
 print("OT fonction optimisee = ", fonction_optimisee(SCALE))
+
+
+
+noyau_tensorise = ot.ProductCovarianceModel([ot.MaternModel([SCALE[0]], AMPLITUDE, NU), 
+                                             ot.MaternModel([SCALE[1]], AMPLITUDE, NU)])
+glm = ot.GeneralLinearModelAlgorithm(input_sample, output_sample, noyau_tensorise, BASE, False)
+glm.setScalePrior(ot.GeneralLinearModelAlgorithm.REFERENCE)
+fonction_optimisee_glm = glm.getObjectiveFunction()
+print("GeneralLinearModelAlgorithm fonction optimisee = ", fonction_optimisee_glm(SCALE))
+
+
