@@ -801,13 +801,23 @@ Scalar GeneralLinearModelAlgorithm::computeLogIntegratedLikelihoodPenalization()
     {
       SymmetricMatrix iTheta(inputDimension + 1);
 
+      // Workaround Issue #1378
+      // OpenTURNS is currently unable to correctly compute the parameterGradient of a reduced CovarianceModel.
+      // To get around this issue, we build an "unreduced" CovarianceModel from the original covarianceModel_
+      // and set its amplitude to 1.0 and its scale to the scale of the reducedCovarianceModel_
+      CovarianceModel unreducedCovarianceModel(covarianceModel_);
+      unreducedCovarianceModel.setAmplitude(Point(1, 1.0));
+      unreducedCovarianceModel.setScale(reducedCovarianceModel_.getScale());
+
       // discretize gradient wrt scale
       Collection<SymmetricMatrix> dCds(inputDimension, SymmetricMatrix(size));
       for (UnsignedInteger k1 = 0; k1 < size; ++ k1)
       {
         for (UnsignedInteger k2 = 0; k2 <= k1; ++ k2)
         {
-          Matrix parameterGradient(reducedCovarianceModel_.parameterGradient(normalizedInputSample_[k1], normalizedInputSample_[k2]));
+          // Workaround Issue #1378
+          // reducedCovarianceModel_ is replaced by unreducedCovarianceModel
+          Matrix parameterGradient(unreducedCovarianceModel.parameterGradient(normalizedInputSample_[k1], normalizedInputSample_[k2]));
 
           //BREAKPOINT
           LOGWARN(OSS() <<  "k1=" << k1 << ", k2=" << k2 << " : parameterGradient = " << parameterGradient);
