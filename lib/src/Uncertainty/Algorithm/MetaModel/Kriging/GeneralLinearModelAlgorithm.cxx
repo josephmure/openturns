@@ -808,6 +808,10 @@ Scalar GeneralLinearModelAlgorithm::computeLogIntegratedLikelihoodPenalization()
         for (UnsignedInteger k2 = 0; k2 <= k1; ++ k2)
         {
           Matrix parameterGradient(reducedCovarianceModel_.parameterGradient(normalizedInputSample_[k1], normalizedInputSample_[k2]));
+
+          //BREAKPOINT
+          LOGWARN(OSS() <<  "k1=" << k1 << ", k2=" << k2 << " : parameterGradient = " << parameterGradient);
+
           for (UnsignedInteger j = 0; j < inputDimension; ++ j)
           {
             // assume scale gradient is at the n first components
@@ -815,6 +819,20 @@ Scalar GeneralLinearModelAlgorithm::computeLogIntegratedLikelihoodPenalization()
           }
         }
       }
+
+      //BREAKPOINT
+      LOGWARN(OSS() <<  "normalizedInputSample_ = " << normalizedInputSample_);
+      LOGWARN(OSS() <<  "reducedCovarianceModel_ = " << reducedCovarianceModel_);
+      LOGWARN(OSS() <<  "reducedCovarianceModel_.getParameter() = " << reducedCovarianceModel_.getParameter());
+      LOGWARN(OSS() <<  "correlation points 0-1 :  " << reducedCovarianceModel_(normalizedInputSample_[0], normalizedInputSample_[1]));
+      LOGWARN(OSS() <<  "gradient points 0-1 :  " << reducedCovarianceModel_.parameterGradient(normalizedInputSample_[0], normalizedInputSample_[1]));
+      LOGWARN(OSS() <<  "reducedCovarianceModel_.getParameterDescription() = " << reducedCovarianceModel_.getParameterDescription());
+
+      // BREAKPOINT
+      for (UnsignedInteger j = 0; j < inputDimension; ++ j)
+      {
+         LOGWARN(OSS() <<  "dCds[" << j << "] = " << dCds[j]);
+      }          
 
       // TODO: cache sigmaTheta
       SquareMatrix Linv(covarianceCholeskyFactor_.solveLinearSystem(IdentityMatrix(covarianceCholeskyFactor_.getNbRows())).getImplementation());
@@ -826,6 +844,9 @@ Scalar GeneralLinearModelAlgorithm::computeLogIntegratedLikelihoodPenalization()
         SquareMatrix LLtinvFFtLLtinvFiFtLLtinv((LLtinv*F_*FtLLtinvFiFtLLtinv).getImplementation());
         sigmaTheta = sigmaTheta - LLtinvFFtLLtinvFiFtLLtinv;
       }
+
+      // BREAKPOINT
+      LOGWARN(OSS() <<  "sigmaTheta = " << sigmaTheta);
 
       // lower triangle
       for (UnsignedInteger i = 0; i < inputDimension; ++ i)

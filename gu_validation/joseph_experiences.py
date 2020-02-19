@@ -13,7 +13,7 @@ output_sample = ot.Sample(np.array([[1.0],[5.0],[4.2],[7.3],[4.5]]))
 
 DIMENSION_SPATIALE = 2
 AMPLITUDE = [1.0]
-SCALE = [1.0,1.0]
+SCALE = [0.55,0.77]
 NU = 2.5
 
 #BASE = ot.ConstantBasisFactory(DIMENSION_SPATIALE).build()
@@ -28,7 +28,16 @@ g.set_scale(SCALE)
 print("JOSEPH log likelihood = ", g._current_log_likelihood)
 print("JOSEPH log prior = ", g._current_log_prior)
 print("JOSEPH optimized function = ", g._current_log_likelihood + g._current_log_prior)
-
+print("JOSEPH info fisher = ")
+print(g.info_fisher_matern())
+print("JOSEPH correlation matrix = ")
+print(g.compute_matern_correlation_matrix())
+print("JOSEPH inverse correlation matrix = ")
+print(np.linalg.inv(g.compute_matern_correlation_matrix()))
+print("JOSEPH derivative correlation matrix 0 = ")
+print(g.compute_matern_derivative_matrix(0))
+print("JOSEPH derivative correlation matrix 1 = ")
+print(g.compute_matern_derivative_matrix(1))
 
 noyau_tensorise = ot.ProductCovarianceModel([ot.MaternModel([SCALE[0]], AMPLITUDE, NU), 
                                              ot.MaternModel([SCALE[1]], AMPLITUDE, NU)])
