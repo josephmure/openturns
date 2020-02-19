@@ -113,6 +113,10 @@ public:
   void setNoise(const Point & noise);
   Point getNoise() const;
 
+  /** Scale prior accessor */
+  ScalePrior getScalePrior() const;
+  void setScalePrior(const ScalePrior likelihoodPrior);
+
   /** Method save() stores the object through the StorageManager */
   virtual void save(Advocate & adv) const;
 
@@ -154,9 +158,6 @@ protected:
   friend class KrigingAlgorithm;
   Point getRho() const;
 
-  // Scale prior accessor
-  ScalePrior getScalePrior() const;
-  void setScalePrior(const ScalePrior likelihoodPrior);
 
 private:
 
