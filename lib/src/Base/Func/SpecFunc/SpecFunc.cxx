@@ -85,7 +85,7 @@ const Scalar SpecFunc::MinScalar    = std::numeric_limits<Scalar>::min();
 const Scalar SpecFunc::LogMinScalar = log(MinScalar);
 const Scalar SpecFunc::MaxScalar    = std::numeric_limits<Scalar>::max();
 const Scalar SpecFunc::LogMaxScalar = log(MaxScalar);
-const Scalar SpecFunc::LowestScalar = -MaxScalar;
+const Scalar SpecFunc::LowestScalar = -std::numeric_limits<Scalar>::infinity();
 const Scalar SpecFunc::ScalarEpsilon = std::numeric_limits<Scalar>::epsilon();
 // Maximum number of iterations for the algorithms
 const UnsignedInteger SpecFunc::MaximumIteration = ResourceMap::GetAsUnsignedInteger("SpecFunc-MaximumIteration");
