@@ -5,10 +5,10 @@ Fit a distribution by maximum likelihood
 # %%
 # In this example we are going to estimate the parameters of a parametric by generic numerical optimization of the likelihood.
 #
-# The likelihood of a sample :math:`X` according to a parametric density function :math:`p_{\underline{\theta}}` is:
+# The likelihood of a sample :math:`X` according to a parametric density function :math:`p_{\vect{\theta}}` is:
 #
 # .. math::
-#    likelihood(\underline{x}_1, \dots, \underline{x}_n,\underline{\theta}) = \prod_{i=1}^n p_{\underline{\theta}}(\underline{x}_i)
+#    likelihood(\vect{x}_1, \dots, \vect{x}_n,\vect{\theta}) = \prod_{i=1}^n p_{\vect{\theta}}(\vect{x}_i)
 #
 
 # %%
