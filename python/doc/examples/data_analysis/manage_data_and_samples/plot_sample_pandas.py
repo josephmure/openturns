@@ -5,7 +5,7 @@ Interaction with Pandas
 # sphinx_gallery_thumbnail_path = '../_static/pandas.png'
 
 # %%
-# In this example we are going to explore interaction with Pandas data analysis tool.
+# In this example we are going to explore interaction with the Pandas data analysis tool.
 
 # %%
 from __future__ import print_function
@@ -14,7 +14,7 @@ import pandas as pd
 ot.Log.Show(ot.Log.NONE)
 
 # %%
-# create a sample from a 3-d gaussian distribution
+# create a sample from a 3-d Gaussian distribution
 sample = ot.Normal(3).getSample(10)
 
 # %%
