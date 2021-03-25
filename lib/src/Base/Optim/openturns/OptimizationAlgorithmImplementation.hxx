@@ -25,6 +25,9 @@
 #include "openturns/PersistentObject.hxx"
 #include "openturns/OptimizationProblem.hxx"
 #include "openturns/OptimizationResult.hxx"
+#include "openturns/LowDiscrepancySequence.hxx"
+#include "openturns/SobolSequence.hxx"
+#include "openturns/Experiment.hxx"
 
 BEGIN_NAMESPACE_OPENTURNS
 
@@ -40,6 +43,9 @@ class OT_API OptimizationAlgorithmImplementation
   CLASSNAME
 public:
 
+  typedef OT::Collection<OT::OptimizationResult>           OptimizationResultCollection;
+  typedef OT::PersistentCollection<OT::OptimizationResult> OptimizationResultPersistentCollection;
+
   /** Default constructor */
   OptimizationAlgorithmImplementation();
 
@@ -52,11 +58,17 @@ public:
   /** Performs the actual computation */
   virtual void run();
 
-  /** Starting point accessor */
-  virtual Point getStartingPoint() const;
+  /** Starting sample accessor */
+  virtual Sample getStartingSample() const;
+  virtual void setStartingSample(const Sample & startingSample, const Bool resetProblem);
 
-  /** Starting point accessor */
-  virtual void setStartingPoint(const Point & startingPoint);
+  /** Append starting sample */
+  virtual void appendStartingSample(const Point & startingPoint);
+  virtual void appendStartingSample(const Sample & startingSample);
+
+  /** Automatically select starting points */
+  virtual void generateAdditionalStartingPoints(const UnsignedInteger nbStartingSampleToBeSelected, const LowDiscrepancySequence & generator = SobolSequence());
+  virtual void generateAdditionalStartingPoints(Experiment & experiment);
 
   /** Problem accessor */
   virtual OptimizationProblem getProblem() const;
@@ -64,6 +76,11 @@ public:
 
   /** Result accessor */
   virtual OptimizationResult getResult() const;
+
+  /** Flag for results management accessors */
+  virtual Bool getKeepResults() const;
+  virtual void setKeepResults(const Bool keepResults);
+  virtual OptimizationResultCollection getResultCollection() const;
 
   /** Result accessor */
   virtual void setResult(const OptimizationResult & result);
@@ -125,6 +142,9 @@ protected:
   /** Check whether this problem can be solved by this solver.  Must be overloaded by the actual optimisation algorithm */
   virtual void checkProblem(const OptimizationProblem & problem) const;
 
+  /** Run optimization algorithm from a specific point */
+  virtual OptimizationResult runFromStartingPoint(const Point & startingPoint, const UnsignedInteger remainingEval);
+
   /** The result of the algorithm */
   OptimizationResult result_;
 
@@ -133,7 +153,7 @@ protected:
   std::pair< StopCallback, void *> stopCallback_;
 
 private:
-  Point startingPoint_;
+  Point startingSample_;
   OptimizationProblem problem_;
 
   /** Number of outermost iterations (in case of nested iterations) */
@@ -147,6 +167,10 @@ private:
   Scalar maximumResidualError_;    /**< Value of ||objectiveFunction(x_n) - objectiveFunction(x_{n-1})|| */
   Scalar maximumConstraintError_;  /**< Value of ||constraints(x_n)|| for the active constraints */
   Bool verbose_ = false;
+
+  /** Flag to tell if the collection of optimization results have to be kept */
+  Bool keepResults_;
+  OptimizationResultPersistentCollection resultCollection_;
 
 } ; /* class OptimizationAlgorithmImplementation */
 

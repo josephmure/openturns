@@ -78,13 +78,13 @@ void Cobyla::checkProblem(const OptimizationProblem & problem) const
 
 /* Performs the actual computation by calling the Cobyla algorithm
  */
-void Cobyla::run()
+OptimizationResult Cobyla::runFromStartingPoint(const Point & startingPoint, const UnsignedInteger maximumEvaluationNumber)
 {
   const UnsignedInteger dimension = getProblem().getDimension();
   int n(dimension);
   int m(getProblem().getInequalityConstraint().getOutputDimension() + 2 * getProblem().getEqualityConstraint().getOutputDimension());
 
-  Point x(getStartingPoint());
+  Point x(startingPoint);
   if (x.getDimension() != dimension)
     throw InvalidArgumentException(HERE) << "Invalid starting point dimension (" << x.getDimension() << "), expected " << dimension;
 
@@ -103,7 +103,7 @@ void Cobyla::run()
   }
 
   Scalar rhoEnd = getMaximumAbsoluteError();
-  int maxFun = getMaximumEvaluationNumber();
+  int maxFun = maximumEvaluationNumber;
   cobyla_message message((getVerbose() ? COBYLA_MSG_INFO : COBYLA_MSG_NONE));
 
   // initialize history
@@ -131,9 +131,9 @@ void Cobyla::run()
    * extern int cobyla(int n, int m, double *x, double rhobeg, double rhoend,
    *  int message, int *maxfun, cobyla_function *calcfc, void *state);
    */
-  int returnCode = ot_cobyla(n, m, &x[0], rhoBeg_, rhoEnd, message, &maxFun, Cobyla::ComputeObjectiveAndConstraint, (void*) this);
+  int returnCode = ot_cobyla(n, m, &x[0], rhoBeg_, rhoEnd, message, &maxFun, Cobyla::ComputeObjectiveAndConstraint, (void*) this, maximumEvaluationNumber);
 
-  result_ = OptimizationResult(getProblem());
+  result = OptimizationResult(getProblem());
 
   // Update the result
   UnsignedInteger size = evaluationInputHistory_.getSize();
@@ -181,17 +181,17 @@ void Cobyla::run()
       relativeError = (inP.normInf() > 0.0) ? (absoluteError / inP.normInf()) : -1.0;
       residualError = (std::abs(outP[0]) > 0.0) ? (std::abs(outP[0] - outPM[0]) / std::abs(outP[0])) : -1.0;
     }
-    result_.store(inP, outP, absoluteError, relativeError, residualError, constraintError);
+    result.store(inP, outP, absoluteError, relativeError, residualError, constraintError);
   }
 
   UnsignedInteger optimalIndex = evaluationInputHistory_.find(x);
   // x might not be exactly the best point evaluated, so fallback to the nearest
   if (optimalIndex >= size)
     optimalIndex = NearestNeighbourAlgorithm(evaluationInputHistory_).query(x);
-  result_.setOptimalPoint(evaluationInputHistory_[optimalIndex]);
-  result_.setOptimalValue(evaluationOutputHistory_[optimalIndex]);
+  result.setOptimalPoint(evaluationInputHistory_[optimalIndex]);
+  result.setOptimalValue(evaluationOutputHistory_[optimalIndex]);
 
-  result_.setEvaluationNumber(maxFun);
+  result.setEvaluationNumber(maxFun);
 
   if ((returnCode != COBYLA_NORMAL) && (returnCode != COBYLA_USERABORT))
   {
@@ -200,6 +200,8 @@ void Cobyla::run()
     else
       throw InternalException(HERE) << "Solving problem by cobyla method failed (" << cobyla_rc_string[returnCode - COBYLA_MINRC] << ")";
   }
+
+  return result;
 }
 
 /* RhoBeg accessor */
@@ -246,7 +248,8 @@ int Cobyla::ComputeObjectiveAndConstraint(int n,
     double *x,
     double *f,
     double *con,
-    void *state)
+    void *state,
+    int maximumEvaluationNumber)
 {
   Cobyla *algorithm = static_cast<Cobyla *>(state);
   const OptimizationProblem problem(algorithm->getProblem());
@@ -317,7 +320,7 @@ int Cobyla::ComputeObjectiveAndConstraint(int n,
   int returnValue = 0;
   if (algorithm->progressCallback_.first)
   {
-    algorithm->progressCallback_.first((100.0 * algorithm->evaluationInputHistory_.getSize()) / algorithm->getMaximumEvaluationNumber(), algorithm->progressCallback_.second);
+    algorithm->progressCallback_.first((100.0 * algorithm->evaluationInputHistory_.getSize()) / maximumEvaluationNumber, algorithm->progressCallback_.second);
   }
   if (algorithm->stopCallback_.first)
   {

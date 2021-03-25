@@ -130,7 +130,7 @@ Scalar AbdoRackwitz::computeLineSearch()
 
 /* Performs the actual computation by using the AbdoRackwitz algorithm
  */
-void AbdoRackwitz::run()
+OptimizationResult AbdoRackwitz::runFromStartingPoint(const Point & startingPoint, const UnsignedInteger maximumEvaluationNumber)
 {
   initialize();
 
@@ -139,7 +139,7 @@ void AbdoRackwitz::run()
   /* Get a local copy of the level value */
   const Scalar levelValue = getProblem().getLevelValue();
   /* Current point -> u */
-  currentPoint_ = getStartingPoint();
+  currentPoint_ = startingPoint;
   Bool exitLoop = false;
   UnsignedInteger iterationNumber = 0;
   const UnsignedInteger initialEvaluationNumber = levelFunction.getEvaluationCallsNumber();
@@ -158,7 +158,7 @@ void AbdoRackwitz::run()
   result_ = OptimizationResult(getProblem());
   result_.store(currentPoint_, Point(1, currentLevelValue_), absoluteError, relativeError, residualError, constraintError);
 
-  while ((!exitLoop) && (iterationNumber <= getMaximumIterationNumber()) && (evaluationNumber <= getMaximumEvaluationNumber()))
+  while ((!exitLoop) && (iterationNumber <= getMaximumIterationNumber()) && (evaluationNumber <= maximumEvaluationNumber))
   {
     /* Go to next iteration */
     ++ iterationNumber;
@@ -211,7 +211,7 @@ void AbdoRackwitz::run()
     // callbacks
     if (progressCallback_.first)
     {
-      progressCallback_.first((100.0 * evaluationNumber) / getMaximumEvaluationNumber(), progressCallback_.second);
+      progressCallback_.first((100.0 * evaluationNumber) / maximumEvaluationNumber, progressCallback_.second);
     }
     if (stopCallback_.first)
     {

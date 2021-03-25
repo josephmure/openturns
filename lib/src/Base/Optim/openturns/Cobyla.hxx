@@ -52,9 +52,6 @@ public:
   /** Virtual constructor */
   Cobyla * clone() const override;
 
-  /** Performs the actual computation. Must be overloaded by the actual optimisation algorithm */
-  void run() override;
-
   /** RhoBeg accessor */
   Scalar getRhoBeg() const;
   void setRhoBeg(const Scalar rhoBeg);
@@ -75,6 +72,9 @@ public:
 protected:
   /** Check whether this problem can be solved by this solver.  Must be overloaded by the actual optimisation algorithm */
   void checkProblem(const OptimizationProblem & problem) const override;
+
+  /** Run optimization algorithm from a specific point */
+  OptimizationResult runFromStartingPoint(const Point & startingPoint, const UnsignedInteger maximumEvaluationNumber) override;
 
 private:
 

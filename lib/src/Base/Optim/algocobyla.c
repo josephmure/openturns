@@ -63,7 +63,7 @@ static int cobylb(int *n, int *m, int *mpp, double *x, double *rhobeg,
                   double *rhoend, int *iprint, int *maxfun, double *con, double *sim,
                   double *simi, double *datmat, double *a, double *vsig, double *veta,
                   double *sigbar, double *dx, double *w, int *iact, cobyla_function *calcfc,
-                  void *state);
+                  void *state, int maximumEvaluationNumber);
 static int trstlp(int *n, int *m, double *a, double *b, double *rho,
                   double *dx, int *ifull, int *iact, double *z__, double *zdota, double *vmultc,
                   double *sdirn, double *dxnew, double *vmultd);
@@ -71,7 +71,7 @@ static int trstlp(int *n, int *m, double *a, double *b, double *rho,
 /* ------------------------------------------------------------------------ */
 
 int ot_cobyla(int n, int m, double *x, double rhobeg, double rhoend, int iprint,
-           int *maxfun, cobyla_function *calcfc, void *state)
+           int *maxfun, cobyla_function *calcfc, void *state, int maximumEvaluationNumber)
 {
   int icon, isim, isigb, idatm, iveta, isimi, ivsig, iwork, ia, idx, mpp, rc;
   int *iact;
@@ -183,7 +183,7 @@ int ot_cobyla(int n, int m, double *x, double rhobeg, double rhoend, int iprint,
   iwork = idx + n;
   rc = cobylb(&n, &m, &mpp, &x[1], &rhobeg, &rhoend, &iprint, maxfun,
               &w[icon], &w[isim], &w[isimi], &w[idatm], &w[ia], &w[ivsig], &w[iveta],
-              &w[isigb], &w[idx], &w[iwork], &iact[1], calcfc, state);
+              &w[isigb], &w[idx], &w[iwork], &iact[1], calcfc, state, maximumEvaluationNumber);
 
   /* Parameter adjustments (reverse) */
   ++iact;
@@ -201,7 +201,7 @@ int cobylb(int *n, int *m, int *mpp, double
            maxfun, double *con, double *sim, double *simi,
            double *datmat, double *a, double *vsig, double *veta,
            double *sigbar, double *dx, double *w, int *iact, cobyla_function *calcfc,
-           void *state)
+           void *state, int maximumEvaluationNumber)
 {
   /* System generated locals */
   int sim_dim1, sim_offset, simi_dim1, simi_offset, datmat_dim1,
@@ -305,7 +305,7 @@ int cobylb(int *n, int *m, int *mpp, double
     goto L600;
   }
   ++nfvals;
-  if (calcfc(*n, *m, &x[1], &f, &con[1], state))
+  if (calcfc(*n, *m, &x[1], &f, &con[1], state, maximumEvaluationNumber))
     {
       if (*iprint >= 1) {
         fprintf(stderr, "cobyla: user requested end of minimization.\n");

@@ -33,7 +33,7 @@ OptimizationAlgorithmImplementation::OptimizationAlgorithmImplementation()
   : PersistentObject()
   , progressCallback_(std::make_pair<ProgressCallback, void *>(0, 0))
   , stopCallback_(std::make_pair<StopCallback, void *>(0, 0))
-  , startingPoint_(Point(0))
+  , startingSample_(Sample())
   , maximumIterationNumber_(ResourceMap::GetAsUnsignedInteger("OptimizationAlgorithm-DefaultMaximumIterationNumber"))
   , maximumEvaluationNumber_(ResourceMap::GetAsUnsignedInteger("OptimizationAlgorithm-DefaultMaximumEvaluationNumber"))
   , maximumAbsoluteError_(ResourceMap::GetAsScalar("OptimizationAlgorithm-DefaultMaximumAbsoluteError"))
@@ -51,6 +51,7 @@ OptimizationAlgorithmImplementation::OptimizationAlgorithmImplementation(const O
   : PersistentObject()
   , progressCallback_(std::make_pair<ProgressCallback, void *>(0, 0))
   , stopCallback_(std::make_pair<StopCallback, void *>(0, 0))
+  , startingSample_(Sample())
   , problem_(problem)
   , maximumIterationNumber_(ResourceMap::GetAsUnsignedInteger("OptimizationAlgorithm-DefaultMaximumIterationNumber"))
   , maximumEvaluationNumber_(ResourceMap::GetAsUnsignedInteger("OptimizationAlgorithm-DefaultMaximumEvaluationNumber"))
@@ -60,18 +61,6 @@ OptimizationAlgorithmImplementation::OptimizationAlgorithmImplementation(const O
   , maximumConstraintError_(ResourceMap::GetAsScalar("OptimizationAlgorithm-DefaultMaximumConstraintError"))
 {
   // Nothing to do
-}
-
-/* Starting point accessor */
-Point OptimizationAlgorithmImplementation::getStartingPoint() const
-{
-  return startingPoint_;
-}
-
-/* Starting point accessor */
-void OptimizationAlgorithmImplementation::setStartingPoint(const Point & startingPoint)
-{
-  startingPoint_ = startingPoint;
 }
 
 /* Result accessor */
@@ -162,7 +151,7 @@ String OptimizationAlgorithmImplementation::__repr__() const
   OSS oss;
   oss << "class=" << OptimizationAlgorithmImplementation::GetClassName()
       << " problem=" << problem_
-      << " startingPoint=" << startingPoint_
+      << " startingSample=" << startingSample_
       << " maximumIterationNumber=" << maximumIterationNumber_
       << " maximumEvaluationNumber=" << maximumEvaluationNumber_
       << " maximumAbsoluteError=" << maximumAbsoluteError_
@@ -170,6 +159,7 @@ String OptimizationAlgorithmImplementation::__repr__() const
       << " maximumResidualError=" << maximumResidualError_
       << " maximumConstraintError=" << maximumConstraintError_
       << " verbose=" << verbose_;
+      << " keepResults=" << keepResults_;
   return oss;
 }
 
@@ -181,6 +171,14 @@ OptimizationProblem OptimizationAlgorithmImplementation::getProblem() const
 
 void OptimizationAlgorithmImplementation::setProblem(const OptimizationProblem & problem)
 {
+  const UnsignedInteger problemDimension = problem.getDimension();
+  if ( (problemDimension > 0) && (startingSample_.getSize() > 0) ) // only perform check if problem is initalized and starting points are already defined
+  {
+    if (problemDimension != startingSample_.getDimension())
+      throw InvalidArgumentException(HERE) << "Problem dimension (" << problemDimension
+                                           << ") and starting points dimension (" << startingSample_.getDimension() << ") do not match.";
+  } // checks
+
   checkProblem(problem);
   problem_ = problem;
 }
@@ -192,9 +190,9 @@ void OptimizationAlgorithmImplementation::checkProblem(const OptimizationProblem
 }
 
 /* Performs the actual computation. Must be overloaded by the actual optimisation algorithm */
-void OptimizationAlgorithmImplementation::run()
+OptimizationResult OptimizationAlgorithmImplementation::runFromStartingPoint(const Point & startingPoint, const UnsignedInteger remainingEval)
 {
-  throw NotYetImplementedException(HERE) << "In OptimizationAlgorithmImplementation::run()";
+  throw NotYetImplementedException(HERE) << "In OptimizationAlgorithmImplementation::runFromStartingPoint()";
 }
 
 /* Virtual constructor */
@@ -215,11 +213,183 @@ void OptimizationAlgorithmImplementation::setVerbose(const Bool verbose)
   verbose_ = verbose;
 }
 
+void OptimizationAlgorithmImplementation::appendStartingSample(const Point & startingPoint)
+{
+  const UnsignedInteger problemDimension = getProblem().getDimension();
+  if (problemDimension > 0) // only perform the check if the problem has been set
+  {
+    if (problemDimension != startingPoint.getDimension())
+      throw InvalidArgumentException(HERE) << "Proposed starting point has dimension " << startingPoint.getDimension()
+                                           << ", but the optimization problem has dimension " << problemDimension;
+  }
+
+  if (startingSample_.getSize() == 0) startingSample_ = Sample(1, startingPoint);
+  else startingSample_.add(startingPoint);
+}
+
+void OptimizationAlgorithmImplementation::appendStartingSample(const Sample & startingSample)
+{
+  const UnsignedInteger problemDimension = getProblem().getDimension();
+  if (problemDimension > 0) // only perform the check if the problem has been set
+  {
+    if (problemDimension != startingSample.getDimension())
+      throw InvalidArgumentException(HERE) << "Proposed starting sample has dimension " << startingSample.getDimension()
+                                           << ", but the optimization problem has dimension " << problemDimension;
+  }
+
+  if (startingSample_.getSize() == 0) startingSample_ = startingSample;
+  else startingSample_.add(startingSample);
+}
+
+/* Automatically select starting points */
+void OptimizationAlgorithmImplementation::generateAdditionalStartingPoints(const UnsignedInteger nbStartingSampleToBeSelected, const LowDiscrepancySequence & generator)
+{
+  // Select points only if there remain points to be selected and the problem has been properly set.
+  if ((nbStartingSampleToBeSelected > 0) && (getProblem().getDimension() > 0))
+  {
+    LOGINFO(OSS() << "Use multi-start with base optimization algorithm=" << solver_.getImplementation()->getClassName());
+    const Point lowerBound(getProblem().getBounds().getLowerBound());
+    const Point upperBound(getProblem().getBounds().getUpperBound());
+    const UnsignedInteger dimension = lowerBound.getDimension();
+    generator.initialize(dimension);
+    Sample population(nbStartingSampleToBeSelected, dimension);
+    for (UnsignedInteger i = 0; i < nbStartingSampleToBeSelected; ++i)
+      {
+        const Point u(generator.generate());
+        for (UnsignedInteger j = 0; j < dimension; ++j)
+          population(i, j) = lowerBound[j] + (upperBound[j] - lowerBound[j]) * u[j];
+      } // i
+
+    if (startingSample_.getSize() == 0) startingSample_ = population;
+    else startingSample_.add(population);
+  }
+}
+
+void OptimizationAlgorithmImplementation::generateAdditionalStartingPoints(Experiment & experiment)
+{
+  addToStartingSample(experiment.generate());
+}
+
+void OptimizationAlgorithmImplementation::run()
+{
+  if (startingSample_.getSize() == 0) throw InvalidArgumentException(HERE) << "No starting points are set.";
+  const UnsignedInteger problemDimension = getProblem().getDimension();
+  if (problemDimension == 0) throw InvalidArgumentException(HERE) << "No problem has been set.";
+  if (problemDimension != startingSample_.getDimension())
+    throw InvalidArgumentException(HERE) << "The starting points dimension (" << startingSample_.getDimension()
+                                         << ") and the problem dimension (" << problemDimension << ") do not match.";
+
+  // run the solver with each starting point
+  resultCollection_.clear();
+  Scalar bestValue = getProblem().isMinimization() ? SpecFunc::MaxScalar : SpecFunc::LowestScalar;
+  const UnsignedInteger size = startingSample_.getSize();
+  const UnsignedInteger initialEvaluationNumber = getProblem().getObjective().getEvaluationCallsNumber();
+  UnsignedInteger evaluationNumber = 0;
+  UnsignedInteger successNumber = 0;
+  UnsignedInteger improvementNumber = 0;
+  for (UnsignedInteger i = 0; i < size; ++ i)
+  {
+    // ensure we do not exceed the global budget if the maximum eval number is set
+    const UnsignedInteger remainingEval = std::max(static_cast<SignedInteger>(getMaximumEvaluationNumber() - evaluationNumber), 0L);
+    LOGDEBUG(OSS() << "Working with starting point[" << i << "]=" << startingSample_[i] << ", " << remainingEval << " remaining evaluations");
+
+    const OptimizationResult result();
+    try
+    {
+      result = runFromStartingPoint(startingSample_[i], remainingEval);
+      ++successNumber;
+    }
+    catch (Exception & ex)
+    {
+      LOGDEBUG(OSS() << "StartingPoint " << i << " failed. Reason=" << ex);
+      continue;
+    }
+
+    if (keepResults_) resultCollection_.add(result);
+    Scalar currentValue = result.getOptimalValue()[0];
+    if ((getProblem().isMinimization() && (currentValue < bestValue))
+        || (!getProblem().isMinimization() && (currentValue > bestValue)))
+    {
+      bestValue = currentValue;
+      setResult(result);
+      LOGINFO(OSS() << "Best initial point so far=" << result.getOptimalPoint() << " value=" << result.getOptimalValue());
+      ++improvementNumber;
+    }
+
+    evaluationNumber += getProblem().getObjective().getEvaluationCallsNumber() - initialEvaluationNumber;
+    LOGDEBUG(OSS() << "Number of evaluations so far=" << evaluationNumber);
+    if (evaluationNumber > getMaximumEvaluationNumber())
+    {
+      break;
+    }
+
+    // callbacks
+    if (progressCallback_.first)
+    {
+      progressCallback_.first((100.0 * evaluationNumber) / getMaximumEvaluationNumber(), progressCallback_.second);
+    }
+    if (stopCallback_.first)
+    {
+      Bool stop = stopCallback_.first(stopCallback_.second);
+      if (stop)
+      {
+        LOGWARN(OSS() << "Multi-start was stopped by user");
+        break;
+      }
+    }
+  }
+  LOGINFO(OSS() << successNumber << " out of " << size << " local searches succeeded, " << improvementNumber << " improvements");
+
+  if (successNumber == 0)
+  {
+    throw InternalException(HERE) << "None of the local searches succeeded.";
+  }
+}
+
+/* Starting sample accessor */
+void OptimizationAlgorithmImplementation::setStartingSample(const Sample & startingSample, const Bool resetProblem)
+{
+  if (resetProblem) setProblem(OptimizationProblem());
+
+  const UnsignedInteger problemDimension = getProblem().getDimension();
+  if (problemDimension > 0) // only perform the check if the problem has been set
+  {
+    if (problemDimension != startingSample.getDimension())
+      throw InvalidArgumentException(HERE) << "Proposed starting sample has dimension " << startingSample.getDimension()
+                                           << ", but the optimization problem has dimension " << problemDimension;
+  }
+
+  startingSample_ = startingSample;
+}
+
+/* Starting points accessor */
+Sample OptimizationAlgorithmImplementation::getStartingSample() const
+{
+  return startingSample_;
+}
+
+
+/* Flag for results management accessors */
+Bool OptimizationAlgorithmImplementation::getKeepResults() const
+{
+  return keepResults_;
+}
+
+void OptimizationAlgorithmImplementation::setKeepResults(const Bool keepResults)
+{
+  keepResults_ = keepResults;
+}
+
+OptimizationAlgorithmImplementation::OptimizationResultCollection OptimizationAlgorithmImplementation::getResultCollection() const
+{
+  return resultCollection_;
+}
+
 /* Method save() stores the object through the StorageManager */
 void OptimizationAlgorithmImplementation::save(Advocate & adv) const
 {
   PersistentObject::save(adv);
-  adv.saveAttribute( "startingPoint_", startingPoint_);
+  adv.saveAttribute( "startingSample_", startingSample_);
   adv.saveAttribute( "problem_", problem_);
   adv.saveAttribute( "maximumIterationNumber_", maximumIterationNumber_);
   adv.saveAttribute( "maximumEvaluationNumber_", maximumEvaluationNumber_);
@@ -228,6 +398,8 @@ void OptimizationAlgorithmImplementation::save(Advocate & adv) const
   adv.saveAttribute( "maximumResidualError_", maximumResidualError_);
   adv.saveAttribute( "maximumConstraintError_", maximumConstraintError_);
   adv.saveAttribute( "verbose_", verbose_);
+  adv.saveAttribute("keepResults_", keepResults_);
+  adv.saveAttribute("resultCollection_", resultCollection_);
 }
 
 
@@ -235,7 +407,7 @@ void OptimizationAlgorithmImplementation::save(Advocate & adv) const
 void OptimizationAlgorithmImplementation::load(Advocate & adv)
 {
   PersistentObject::load(adv);
-  adv.loadAttribute( "startingPoint_", startingPoint_);
+  adv.loadAttribute( "startingSample_", startingSample_);
   adv.loadAttribute( "problem_", problem_);
   adv.loadAttribute( "maximumIterationNumber_", maximumIterationNumber_);
   adv.loadAttribute( "maximumEvaluationNumber_", maximumEvaluationNumber_);
@@ -244,6 +416,8 @@ void OptimizationAlgorithmImplementation::load(Advocate & adv)
   adv.loadAttribute( "maximumResidualError_", maximumResidualError_);
   adv.loadAttribute( "maximumConstraintError_", maximumConstraintError_);
   adv.loadAttribute( "verbose_", verbose_);
+  adv.loadAttribute("keepResults_", keepResults_);
+  adv.loadAttribute("resultCollection_", resultCollection_);
 }
 
 

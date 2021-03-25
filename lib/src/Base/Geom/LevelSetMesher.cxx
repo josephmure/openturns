@@ -215,7 +215,7 @@ Mesh LevelSetMesher::build(const LevelSet & levelSet,
               shiftFunction.setConstant(currentVertex);
               ComposedFunction levelFunction(function, shiftFunction);
               problem.setLevelFunction(levelFunction);
-              solver_.setStartingPoint(delta);
+              solver_.appendStartingSample(delta);
               solver_.setProblem(problem);
               OptimizationResult result;
               // Here we have to catch exceptions raised by the gradient
@@ -242,7 +242,7 @@ Mesh LevelSetMesher::build(const LevelSet & levelSet,
                 {
                   // There is definitely a problem with this vertex. Try a gradient-free solver
                   Cobyla solver(solver_.getProblem());
-                  solver.setStartingPoint(solver_.getStartingPoint());
+                  solver.appendStartingSample(solver_.getStartingSample());
                   LOGDEBUG(OSS() << "Problem to project point=" << currentVertex << " with solver=" << solver_ << " and finite differences for gradient, switching to solver=" << solver);
                   solver.run();
                   result = solver.getResult();

@@ -212,11 +212,11 @@ protected:
 
 /* Performs the actual computation by calling the Ceres library
  */
-void Ceres::run()
+OptimizationResult Ceres::runFromStartingPoint(const Point & startingPoint, const UnsignedInteger maximumEvaluationNumber)
 {
 #ifdef OPENTURNS_HAVE_CERES
   const UnsignedInteger dimension = getProblem().getDimension();
-  Point x(getStartingPoint());
+  Point x(startingPoint);
   if (x.getDimension() != dimension)
     throw InvalidArgumentException(HERE) << "Invalid starting point dimension (" << x.getDimension() << "), expected " << dimension;
 
@@ -488,7 +488,7 @@ void Ceres::run()
   result.setIterationNumber(iterationNumber);
   result.setOptimalPoint(x);
   result.setOptimalValue(Point(1, optimalValue));
-  setResult(result);
+  return result;
 #else
   throw NotYetImplementedException(HERE) << "No Ceres support";
 #endif

@@ -57,9 +57,6 @@ public:
   /** Virtual constructor */
   AbdoRackwitz * clone() const override;
 
-  /** Performs the actual computation. Must be overloaded by the actual optimisation algorithm */
-  void run() override;
-
   /** Tau accessor */
   Scalar getTau() const;
   void setTau(const Scalar tau);
@@ -84,6 +81,9 @@ public:
 protected:
   /** Check whether this problem can be solved by this solver.  Must be overloaded by the actual optimisation algorithm */
   void checkProblem(const OptimizationProblem & problem) const override;
+
+  /** Run optimization algorithm from a specific point */
+  OptimizationResult runFromStartingPoint(const Point & startingPoint, const UnsignedInteger maximumEvaluationNumber) override;
 
 private:
 

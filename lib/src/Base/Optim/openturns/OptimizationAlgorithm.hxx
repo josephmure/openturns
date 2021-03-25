@@ -59,8 +59,16 @@ public:
   void run();
 
   /** Starting point accessor */
-  Point getStartingPoint() const;
-  void setStartingPoint(const Point & startingPoint);
+  Sample getStartingSample() const;
+  void setStartingSample(const Sample & startingSample, const Bool resetProblem);
+
+  /** Append starting sample */
+  void appendStartingSample(const Point & startingPoint);
+  void appendStartingSample(const Sample & startingSample);
+
+  /** Automatically select starting points */
+  void generateAdditionalStartingPoints(const UnsignedInteger nbStartingSampleToBeSelected, const LowDiscrepancySequence & generator = SobolSequence());
+  void generateAdditionalStartingPoints(Experiment & experiment);
 
   /** Problem accessor */
   OptimizationProblem getProblem() const;
@@ -69,6 +77,11 @@ public:
   /** Result accessor */
   Result getResult() const;
   void setResult(const Result & result);
+
+  /** Flag for results management accessors */
+  Bool getKeepResults() const;
+  void setKeepResults(const Bool keepResults);
+  OptimizationAlgorithmImplementation::OptimizationResultCollection getResultCollection() const;
 
   /** Maximum iterations number accessor */
   UnsignedInteger getMaximumIterationNumber() const;

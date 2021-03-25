@@ -49,9 +49,6 @@ public:
   /** Virtual constructor */
   Ceres * clone() const override;
 
-  /** Performs the actual computation. Must be overloaded by the actual optimisation algorithm */
-  void run() override;
-
   /** Algorithm names accessor */
   static Description GetAlgorithmNames();
 
@@ -84,6 +81,9 @@ protected:
 
   String algoName_;
 
+  /** Run optimization algorithm from a specific point */
+  OptimizationResult runFromStartingPoint(const Point & startingPoint, const UnsignedInteger maximumEvaluationNumber) override;
+  
 private:
 
   // temporary, used to track input/outputs

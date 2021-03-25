@@ -63,15 +63,40 @@ OptimizationAlgorithm::OptimizationAlgorithm(const OptimizationProblem & problem
 }
 
 /* Starting point accessor */
-Point OptimizationAlgorithm::getStartingPoint() const
+Point OptimizationAlgorithm::getStartingSample() const
 {
-  return getImplementation()->getStartingPoint();
+  return getImplementation()->getStartingSample();
 }
 
-void OptimizationAlgorithm::setStartingPoint(const Point & startingPoint)
+void OptimizationAlgorithm::setStartingSample(const Sample & startingSample)
 {
   copyOnWrite();
-  getImplementation()->setStartingPoint(startingPoint);
+  getImplementation()->setStartingSample(startingSample);
+}
+
+/* Append starting sample */
+void OptimizationAlgorithm::appendStartingSample(const Point & startingPoint)
+{
+  copyOnWrite();
+  getImplementation()->appendStartingSample(startingPoint);
+}
+void OptimizationAlgorithm::appendStartingSample(const Sample & startingSample)
+{
+  copyOnWrite();
+  getImplementation()->appendStartingSample(startingSample);
+}
+
+/* Automatically select starting points */
+void OptimizationAlgorithm::generateAdditionalStartingPoints(const UnsignedInteger nbStartingSampleToBeSelected, const LowDiscrepancySequence & generator)
+{
+  copyOnWrite();
+  getImplementation()->generateAdditionalStartingPoints(nbStartingSampleToBeSelected, generator);
+}
+
+void OptimizationAlgorithm::generateAdditionalStartingPoints(Experiment & experiment);
+{
+  copyOnWrite();
+  getImplementation()->generateAdditionalStartingPoints(experiment);
 }
 
 /* Problem accessor */
@@ -97,6 +122,23 @@ void OptimizationAlgorithm::setResult(const Result & result)
 {
   copyOnWrite();
   getImplementation()->setResult(result);
+}
+
+/* Flag for results management accessors */
+Bool getKeepResults() const
+{
+  getImplementation()->getKeepResults();
+}
+
+void setKeepResults(const Bool keepResults)
+{
+  copyOnWrite();
+  getImplementation()->setKeepResults(keepResults);
+}
+
+OptimizationResultCollection getResultCollection() const
+{
+  getImplementation()->getResultCollection();
 }
 
 /* Maximum iterations number accessor */

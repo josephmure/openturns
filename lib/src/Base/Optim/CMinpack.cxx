@@ -131,7 +131,7 @@ void CMinpack::InverseTransform(Point & x, int n, const Interval & bounds)
   }
 }
 
-int CMinpack::ComputeObjectiveJacobian(void *p, int m, int n, const Scalar *x, Scalar *fvec, Scalar *fjac, int /*ldfjac*/, int iflag)
+int CMinpack::ComputeObjectiveJacobian(void *p, int m, int n, const Scalar *x, Scalar *fvec, Scalar *fjac, int /*ldfjac*/, int iflag, int maximumEvaluationNumber)
 {
   CMinpack *algorithm = static_cast<CMinpack *>(p);
   if (!algorithm)
@@ -170,7 +170,7 @@ int CMinpack::ComputeObjectiveJacobian(void *p, int m, int n, const Scalar *x, S
   // callbacks
   if (algorithm->progressCallback_.first)
   {
-    algorithm->progressCallback_.first((100.0 * algorithm->evaluationInputHistory_.getSize()) / algorithm->getMaximumEvaluationNumber(), algorithm->progressCallback_.second);
+    algorithm->progressCallback_.first((100.0 * algorithm->evaluationInputHistory_.getSize()) / maximumEvaluationNumber, algorithm->progressCallback_.second);
   }
   if (algorithm->stopCallback_.first)
   {
@@ -187,11 +187,10 @@ int CMinpack::ComputeObjectiveJacobian(void *p, int m, int n, const Scalar *x, S
 
 /* Performs the actual computation by calling the CMinpack library
  */
-void CMinpack::run()
+OptimizationResult CMinpack::runFromStartingPoint(const Point & startingPoint, const UnsignedInteger maximumEvaluationNumber)
 {
 #ifdef OPENTURNS_HAVE_CMINPACK
   const UnsignedInteger dimension = getProblem().getDimension();
-  Point startingPoint(getStartingPoint());
   if (startingPoint.getDimension() != dimension)
     throw InvalidArgumentException(HERE) << "Invalid starting point dimension (" << startingPoint.getDimension() << "), expected " << dimension;
 
@@ -344,7 +343,7 @@ void CMinpack::run()
   const Scalar ftol = getMaximumResidualError();
   const Scalar xtol = getMaximumAbsoluteError();
   const Scalar gtol = getMaximumConstraintError();
-  const int maxfev = getMaximumEvaluationNumber();
+  const int maxfev = maximumEvaluationNumber;
   const int mode = 1;
   const Scalar factor = 100.0;
   const int nprint = 0;
@@ -453,7 +452,7 @@ void CMinpack::run()
   result.setEvaluationNumber(size);
   result.setOptimalPoint(optimizer);
   result.setOptimalValue(Point(1, optimalValue));
-  setResult(result);
+  return result;
 #else
   throw NotYetImplementedException(HERE) << "No CMinpack support";
 #endif

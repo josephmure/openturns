@@ -91,7 +91,7 @@ extern char *cobyla_rc_string[6];
  *
  */
 typedef int cobyla_function(int n, int m, double *x, double *f, double *con,
-                            void *state);
+                            void *state, int maximumEvaluationNumber);
 
 /*
  * cobyla : minimize a function subject to constraints
@@ -111,7 +111,7 @@ typedef int cobyla_function(int n, int m, double *x, double *f, double *con,
  *
  */
 extern int ot_cobyla(int n, int m, double *x, double rhobeg, double rhoend,
-                  int message, int *maxfun, cobyla_function *calcfc, void *state);
+                  int message, int *maxfun, cobyla_function *calcfc, void *state, int maximumEvaluationNumber);
 
 END_C_DECLS
 

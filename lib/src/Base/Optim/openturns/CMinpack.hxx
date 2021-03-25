@@ -44,9 +44,6 @@ public:
   /** Virtual constructor */
   CMinpack * clone() const override;
 
-  /** Performs the actual computation. Must be overloaded by the actual optimisation algorithm */
-  void run() override;
-
   /** String converter */
   String __repr__() const override;
 
@@ -64,6 +61,9 @@ public:
 protected:
   /** Check whether this problem can be solved by this solver.  Must be overloaded by the actual optimisation algorithm */
   void checkProblem(const OptimizationProblem & problem) const override;
+
+  /** Run optimization algorithm from a specific point */
+  OptimizationResult runFromStartingPoint(const Point & startingPoint, const UnsignedInteger maximumEvaluationNumber) override;
 
 private:
   static int ComputeObjectiveJacobian(void *p, int m, int n, const Scalar *x, Scalar *fvec, Scalar *fjac, int ldfjac, int iflag);
