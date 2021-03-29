@@ -112,7 +112,38 @@ This slope is then used in the computation of the height 'H'.
 >>> print(myFunction(X))
 [2.142,-11.358]
 
+The following example uses the min and sqrt functions:
+
+>>> formula = 'min(-x1 - x2 - x3 + 3 * sqrt(3), -x3 + 3)'
+>>> limitStateFunction = ot.SymbolicFunction(['x1', 'x2', 'x3'], [formula])
+>>> print(limitStateFunction([1, 2, 3]))
+[-0.803848]
+
+The following example illustrates a function for a system of two components.
+
+>>> equations = ['var g1 := x1^2 -8 * x2 + 16']
+>>> equations.append('var g2 := -16 * x1 + x2 + 32')
+>>> equations.append('gsys := max(g1, g2)')
+>>> formula = ';'.join(equations)
+>>> limitStateFunction = ot.SymbolicFunction(['x1', 'x2'], ['gsys'], formula)
+>>> print(limitStateFunction([1, 2]))
+[18]
+
+The following example splits the formula into three parts to manage its length:
+
+>>> formula = '15.59 * 1e4 - x1 *x2^3 / (2 * x3^3) *'
+>>> formula += '((x4^2 - 4 * x5 * x6 * x7^2 + '
+>>> formula += (
+>>>     'x4 * (x6 + 4 * x5 + 2 *x6 * x7)) / (x4 * x5 * (x4 + x6 + 2 *x6 *x7)))'
+>>> )
+>>> limitStateFunction = ot.SymbolicFunction(
+>>>     ['x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7'], [formula]
+>>> )
+>>> print(limitStateFunction([1, 2, 3, 4, 5, 6, 7]))
+[155900]
+
 See ExprTk documentation for details.
+
 "
 
 // ---------------------------------------------------------------------
@@ -130,6 +161,7 @@ Examples
 >>> import openturns as ot
 >>> print(ot.SymbolicFunction.GetValidFunctions()[0])
 sin(arg) -> sine function"
+
 
 // ---------------------------------------------------------------------
 
