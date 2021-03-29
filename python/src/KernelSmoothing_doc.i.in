@@ -43,6 +43,48 @@ Compare the PDFs:
 >>> graph.add( ot.Gamma(6.0, 1.0).drawPDF())
 >>> graph.setColors(['blue', 'red'])
 >>> graph.setLegends(['KS dist', 'Gamma'])
+
+Case 1 : empty constructor
+
+>>> n = ot.Normal()
+>>> sample = n.getSample(100)
+>>> factory = ot.KernelSmoothing()
+>>> distribution = factory.build(sample)
+>>> bandwidth = factory.getBandwidth()
+>>> print(bandwidth)
+[0.35344]
+>>> print(type(distribution))
+<class 'openturns.model_copula.Distribution'>
+
+Build into a specific Distribution
+
+>>> distribution = factory.buildAsKernelMixture(sample, bandwidth)
+>>> print(type(distribution))
+<class 'openturns.dist_bundle2.KernelMixture'>
+>>> distribution = factory.buildAsMixture(sample, bandwidth)
+>>> print(type(distribution))
+<class 'openturns.dist_bundle2.Mixture'>
+
+Case 2 : specify the kernel
+
+>>> kernel = ot.Normal()
+>>> bined = True
+>>> binNumber = 64
+>>> factory = ot.KernelSmoothing(kernel, bined, binNumber)
+
+Case 3 : specify the boundary correction (by default, it is false)
+
+>>> kernel = ot.Normal()
+>>> bined = True
+>>> binNumber = 64
+>>> boundaryCorrection = True
+>>> factory = ot.KernelSmoothing(kernel, bined, binNumber, boundaryCorrection)
+
+Build as TruncatedDistribution (boundary correction must be enabled)
+
+>>> distribution = factory.buildAsTruncatedDistribution(sample, bandwidth)
+>>> print(type(distribution))
+<class 'openturns.dist_bundle2.TruncatedDistribution'>
 "
 
 // ---------------------------------------------------------------------
