@@ -48,6 +48,7 @@
  * #1714 (The log-PDF of the Pareto is wrong)
  * #1721 (The `draw` method of `SobolSimulationAlgorithm` does not reuse the descriptions)
  * #1722 (The StandardEvent class deserves a full-length example)
+ * #1723 (There is no interesting example of the ExprTk feature of SymbolicFunction)
  * #1729 (LinearModelAnalysis sometimes fail)
  * #1731 (The Extreme value example may be improved)
  * #1737 (Low rank tensor doc issues)
