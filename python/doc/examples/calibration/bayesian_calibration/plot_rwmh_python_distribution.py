@@ -69,7 +69,7 @@ class CensoredWeibull(ot.PythonDistribution):
         self.beta = beta
     
     def getRange(self):
-        return ot.Interval([0, 0], [1, 1], [True]*2, [False, True])    
+        return ot.Interval([0, 0], [1, 1], [True]*2, [False, True])
 
     def computeLogPDF(self, x):
         log_pdf = -( x[0] / self.beta )**self.alpha
@@ -108,7 +108,7 @@ x = ot.Sample( np.vstack((Tobs, fail)).T )
 
 # %%
 # Define a uniform prior distribution for :math:`\alpha` and a Gamma prior distribution for :math:`\beta`
-# 
+#
 
 # %%
 
@@ -126,7 +126,7 @@ prior.setDescription(['alpha','beta'])
 
 # %%
 # We select prior means as the initial point of the Metropolis-Hastings algorithm.
-# 
+#
 
 # %%
 
@@ -134,7 +134,7 @@ initialState = ot.Point([ 0.5*(alpha_max - alpha_min), a_beta / b_beta ])
 
 # %%
 # For our random walk proposal distributions, we choose normal steps, with standard deviation equal to roughly :math:`10\%` of the prior range (for the uniform prior) or standard deviation (for the normal prior).
-# 
+#
 
 # %%
 
@@ -161,7 +161,7 @@ print("Acceptance rate: %s"%(RWMHsampler.getAcceptanceRate()))
 
 # %%
 # Plot prior to posterior marginal plots
-# 
+#
 
 # %%
 kernel = ot.KernelSmoothing()
