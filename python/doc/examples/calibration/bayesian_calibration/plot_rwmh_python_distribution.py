@@ -9,7 +9,7 @@ Posterior sampling using a PythonDistribution
 #
 # In the following, we assume that the lifetime :math:`T_i` of an industrial component follows the Weibull distribution :math:`\mathcal W(\alpha, \eta)`, with CDF  given by :math:`F(t|\eta,\alpha)= 1 - e^{-\left( \frac{t}{\eta} \right)^\alpha}`
 #
-# Our goal is to estimate the model parameters :math:`\alpha, \eta` based on a dataset of recorded failures :math:`(t_1, \ldots, t_n),` some of which correspond to actual failures, and the remaining are right-censored. Let :math:`(c_1, \ldots, c_n) \in \{0,1\}^n` represent the nature of each datum, :math:`f_i=1` if :math:`t_i` corresponds to an actual failure, :math:`f_i=0` if it is right-censored.
+# Our goal is to estimate the model parameters :math:`\alpha, \eta` based on a dataset of recorded failures :math:`(t_1, \ldots, t_n),` some of which correspond to actual failures, and the remaining are right-censored. Let :math:`(f_1, \ldots, f_n) \in \{0,1\}^n` represent the nature of each datum, :math:`f_i=1` if :math:`t_i` corresponds to an actual failure, :math:`f_i=0` if it is right-censored.
 #
 # Note that the likelihood of each recorded failure is given by the Weibull density: :math:`\mathcal L(t_i | f_i=1, \alpha, \eta) = \frac{\alpha}{\eta}\left( \frac{t_i}{\eta} \right)(\alpha-1)e^{-\left( \frac{t_i}{\eta} \right)^\alpha},` while the likelihood of each right-censored observation is given by: :math:`\mathcal L(t_i | f_i=0, \alpha, \eta) = e^{-\left( \frac{t_i}{\eta} \right)^\alpha}.`
 #
@@ -19,7 +19,7 @@ Posterior sampling using a PythonDistribution
 #
 #
 # .. math::
-#   \pi(\alpha, \beta | (t_1, f_1), \ldots, (t_n, f_n) ) \propto \pi(\alpha)\pi(\beta) \left(\frac{\alpha}{\beta}\right)^{\sum_i f_i} \left(\prod_{f_i = 1} \frac{t_i}{\beta}\right)^{\alpha-1} \exp\left[-\sum_{i=1}^n\left(\frac{t_i}{\beta}\right)^\beta\right].
+#   \pi(\alpha, \beta | (t_1, f_1), \ldots, (t_n, f_n) ) \propto \pi(\alpha)\pi(\beta) \left(\frac{\alpha}{\beta}\right)^{\sum_i f_i} \left(\prod_{f_i = 1} \frac{t_i}{\beta}\right)^{\alpha-1} \exp\left[-\sum_{i=1}^n\left(\frac{t_i}{\beta}\right)^\alpha\right].
 #
 # Set up the :class:`PythonDistribution`
 # --------------------------------------
@@ -28,7 +28,7 @@ Posterior sampling using a PythonDistribution
 #
 # - The conditional density :math:`p(t_{1:n}|f_{1:n}, \alpha, \beta)` must be defined as a probability distribution
 # - The prior probability density :math:`\pi(\vect{\theta})`, reflecting beliefs about the possible values
-#   of :math:`\vect{\theta}` before the experimental data are considered.
+#   of :math:`\vect{\theta} = (\alpha, \beta)` before the experimental data are considered.
 # - Initial values :math:`\vect{\theta}_0` for the calibration parameters
 # - Proposal distributions used to update each parameter sequentially.
 #
