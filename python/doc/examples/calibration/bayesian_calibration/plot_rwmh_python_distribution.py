@@ -1,6 +1,6 @@
 """
-Bayesian inference via RWMH using a Python Distribution
-======================================================
+Posterior sampling using a Python Distribution
+==============================================
 """
 # %%
 # In this example we are going to show how to do Bayesian inference using the :class:`~openturns.RandomWalkMetropolisHastings` algorithm in a statistical model defined through a :class:`~openturns.PythonDistribution`.
@@ -8,11 +8,11 @@ Bayesian inference via RWMH using a Python Distribution
 # This method is illustrated on a simple lifetime study test-case, which involves censored data, as described hereafter.
 #
 # In the following, we assume that the lifetime :math:`T_i` of an industrial component follows the Weibull distribution :math:`\mathcal W(\beta, \eta)`, with CDF  given by :math:`F(t|\eta,\beta)= 1 - e^{-\left( \frac{t}{\eta} \right)^\beta}`
-# 
+#
 # Our goal is to estimate the model parameters :math:`\beta, \eta` based on a dataset of recorded failures :math:`(t_1, \ldots, t_n),` some of which correspond to actual failures, and the remaining are right-censored. Let :math:`(c_1, \ldots, c_n) \in \{0,1\}^n` represent the nature of each datum, :math:`f_i=1` if :math:`t_i` corresponds to an actual failure, :math:`f_i=0` if it is right-censored.
-# 
-# Note that the likelihood of each recorded failure is given by the Weibull density: :math:`\mathcal L(t_i | f_i=1, \beta, \eta) = \frac{\beta}{\eta}\left( \frac{t_i}{\eta} \right)^(\beta-1)e^{-\left( \frac{t_i}{\eta} \right)^\beta},` while the likelihood of each right-censored observation is given by: :math:`\mathcal L(t_i | f_i=0, \beta, \eta) = e^{-\left( \frac{t_i}{\eta} \right)^\beta}.`
-# 
+#
+# Note that the likelihood of each recorded failure is given by the Weibull density: :math:`\mathcal L(t_i | f_i=1, \beta, \eta) = \frac{\beta}{\eta}\left( \frac{t_i}{\eta} \right)(\beta-1)e^{-\left( \frac{t_i}{\eta} \right)^\beta},` while the likelihood of each right-censored observation is given by: :math:`\mathcal L(t_i | f_i=0, \beta, \eta) = e^{-\left( \frac{t_i}{\eta} \right)^\beta}.`
+#
 # Furthermore, assume that the prior information available on :math:`\beta, \eta` is represented by independent prior laws, whose respective densities are denoted by :math:`\pi(\beta)` and :math:`\pi(\eta).`
 #
 # Then, the posterior distribution of :math:`(\beta, \eta)`, representing the update of the prior information on :math:`(\beta, \eta)` given the dataset has a PDF which is proportional to:
@@ -20,15 +20,15 @@ Bayesian inference via RWMH using a Python Distribution
 #
 # .. math::
 #   \pi(\beta, \eta | (t_1, f_1), \ldots, (t_n, f_n) ) \propto \pi(\beta)\pi(\eta) \left(\frac{\beta}{\eta}\right)^{\sum_i f_i} \left(\prod_{f_i = 1} \frac{t_i}{\eta}\right)^{\beta-1} \exp\left[-\sum_{i=1}^n\left(\frac{t_i}{\eta}\right)^\beta\right].
-# 
+#
 # Set up the :class:`PythonDistribution`
 # --------------------------------------
 #
 # The :class:`~openturns.RandomWalkMetropolisHastings` class can be used to sample from the posterior distribution. It relies on the following objects:
 #
 # - The conditional density :math:`p(t_{1:n}|f_{1:n}, \beta, \eta)` must be defined as a probability distribution
-# - The prior probability density :math:`\pi(\underline{\theta})`, reflecting beliefs about the possible values
-#   of :math:`\underline{\theta}` before the experimental data are considered.
+# - The prior probability density :math:`\pi(\vect{\theta})`, reflecting beliefs about the possible values
+#   of :math:`\vect{\theta}` before the experimental data are considered.
 # - Initial values :math:`\vect{\theta}_0` for the calibration parameters
 # - Proposal distributions used to update each parameter sequentially.
 #
@@ -56,7 +56,12 @@ ot.Log.Show(ot.Log.NONE)
 
 class CensoredWeibull(ot.PythonDistribution):
     """
-    Vraisemblance de Weibull avec censures à droite
+    Right-censored Weibull log-PDF calculation
+    Each data point x is assumed 2D, with:
+        x[0]: observed functioning time
+        x[1]: nature of x[0]: 
+            if x[1]=0: x[0] is a time-to failure
+            if x[1]=1: x[0] is a censoring time
     """
     def __init__(self, beta=2.0, eta=5000.0):
         super(CensoredWeibull, self).__init__(2)
@@ -64,7 +69,7 @@ class CensoredWeibull(ot.PythonDistribution):
         self.eta = eta
     
     def getRange(self):
-        return ot.Interval([0, 0], [1, 1], [True]*2, [False, True])    
+        return ot.Interval([0, 0], [1, 1], [True]*2, [False, True])
 
     def computeLogPDF(self, x):
         log_pdf = -( x[0] / self.eta )**self.beta
@@ -103,12 +108,12 @@ x = ot.Sample( np.vstack((Tobs, fail)).T )
 
 # %%
 # Define a uniform prior distribution for :math:`\beta` and a Gamma prior distribution for :math:`\eta`
-# 
+#
 
 # %%
 
-beta_min, beta_max = 0.5, 3.8 
-a_eta, b_eta = 2, 2e-4 
+beta_min, beta_max = 0.5, 3.8
+a_eta, b_eta = 2, 2e-4
 
 priorCopula = ot.IndependentCopula(2)# prior independence
 priorMarginals = []# prior marginals
@@ -121,7 +126,7 @@ prior.setDescription(['beta','eta'])
 
 # %%
 # We select prior means as the initial point of the Metropolis-Hastings algorithm.
-# 
+#
 
 # %%
 
@@ -129,7 +134,7 @@ initialState = ot.Point([ 0.5*(beta_max - beta_min), a_eta / b_eta ])
 
 # %%
 # For our random walk proposal distributions, we choose normal steps, with standard deviation equal to roughly :math:`10\%` of the prior range (for the uniform prior) or standard deviation (for the normal prior).
-# 
+#
 
 # %%
 
@@ -156,7 +161,7 @@ print("Acceptance rate: %s"%(RWMHsampler.getAcceptanceRate()))
 
 # %%
 # Plot prior to posterior marginal plots
-# 
+#
 
 # %%
 kernel = ot.KernelSmoothing()
