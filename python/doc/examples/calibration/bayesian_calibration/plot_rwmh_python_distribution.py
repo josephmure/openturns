@@ -60,7 +60,7 @@ ot.RandomGenerator.SetSeed(123)
 #
 # - `getRange`: required for conversion to the :class:`~openturns.Distribution` format
 # - `computeLogPDF`: used by :class:`~openturns.RandomWalkMetropolisHastings` to evaluate the posterior density
-# - `setParameter` used by :class:`openturns.RandomWalkMetropolisHastings` to test new parameter values
+# - `setParameter` used by :class:`~openturns.RandomWalkMetropolisHastings` to test new parameter values
 #
 # *Note:* We formally define a bivariate distribution on the :math:`(t_i, f_i)` couple, even though :math:`f_i` has no distibution (it is simply a covariate).
 # This is not an issue, since the sole purpose of this :class:`~openturns.PythonDistribution` object is to pass the likelihood calculation over to :class:`~openturns.RandomWalkMetropolisHastings`.
