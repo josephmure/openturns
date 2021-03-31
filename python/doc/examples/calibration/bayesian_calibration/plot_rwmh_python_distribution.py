@@ -32,16 +32,17 @@ Posterior sampling using a PythonDistribution
 #
 # Set up the :class:`PythonDistribution`
 # --------------------------------------
-# Set up the :class:`PythonDistribution`
-# --------------------------------------
-#
 # The :class:`~openturns.RandomWalkMetropolisHastings` class can be used to sample from the posterior distribution. It relies on the following objects:
 #
-# - The conditional density :math:`p(t_{1:n}|f_{1:n}, \alpha, \beta)` must be defined as a probability distribution
-# - The prior probability density :math:`\pi(\vect{\theta})`, reflecting beliefs about the possible values
+# - The conditional density :math:`p(t_{1:n}|f_{1:n}, \alpha, \beta)` will be defined as a :class:`~openturns.PythonDistribution`.
+# - The prior probability density :math:`\pi(\vect{\theta})` reflects beliefs about the possible values
 #   of :math:`\vect{\theta} = (\alpha, \beta)` before the experimental data are considered.
-# - Initial values :math:`\vect{\theta}_0` for the calibration parameters
+# - Initial values :math:`\vect{\theta}_0` for the calibration parameters.
 # - Proposal distributions used to update each parameter sequentially.
+#
+# Set up the PythonDistribution
+# -----------------------------
+#
 #
 # The censured Weibuill likelihood is outside the usual catalog of probability distributions in OpenTURNS, hence we need to define it using the :class:`~openturns.PythonDistribution` class.
 
