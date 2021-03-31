@@ -11,7 +11,15 @@ Posterior sampling using a PythonDistribution
 #
 # Our goal is to estimate the model parameters :math:`\alpha, \beta` based on a dataset of recorded failures :math:`(t_1, \ldots, t_n),` some of which correspond to actual failures, and the remaining are right-censored. Let :math:`(f_1, \ldots, f_n) \in \{0,1\}^n` represent the nature of each datum, :math:`f_i=1` if :math:`t_i` corresponds to an actual failure, :math:`f_i=0` if it is right-censored.
 #
-# Note that the likelihood of each recorded failure is given by the Weibull density: :math:`\mathcal L(t_i | f_i=1, \alpha, \beta) = \frac{\alpha}{\beta}\left( \frac{t_i}{\beta} \right)(\alpha-1)e^{-\left( \frac{t_i}{\beta} \right)^\alpha},` while the likelihood of each right-censored observation is given by: :math:`\mathcal L(t_i | f_i=0, \alpha, \beta) = e^{-\left( \frac{t_i}{\beta} \right)^\alpha}.`
+# Note that the likelihood of each recorded failure is given by the Weibull density:
+#
+# .. math::
+#   \mathcal L(t_i | f_i=1, \alpha, \beta) = \frac{\alpha}{\beta}\left( \frac{t_i}{\beta} \right)^{\alpha-1} e^{-\left( \frac{t_i}{\beta} \right)^\alpha}.
+#
+# On the other hand, the likelihood of each right-censored observation is given by:
+#
+# .. math::
+#   \mathcal L(t_i | f_i=0, \alpha, \beta) = e^{-\left( \frac{t_i}{\beta} \right)^\alpha}.
 #
 # Furthermore, assume that the prior information available on :math:`\alpha, \beta` is represented by independent prior laws, whose respective densities are denoted by :math:`\pi(\alpha)` and :math:`\pi(\beta).`
 #
