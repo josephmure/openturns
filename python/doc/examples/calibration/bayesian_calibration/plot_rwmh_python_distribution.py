@@ -30,8 +30,6 @@ Posterior sampling using a PythonDistribution
 # .. math::
 #   \pi(\alpha, \beta | (t_1, f_1), \ldots, (t_n, f_n) ) \propto \pi(\alpha)\pi(\beta) \left(\frac{\alpha}{\beta}\right)^{\sum_i f_i} \left(\prod_{f_i = 1} \frac{t_i}{\beta}\right)^{\alpha-1} \exp\left[-\sum_{i=1}^n\left(\frac{t_i}{\beta}\right)^\alpha\right].
 #
-# Set up the :class:`PythonDistribution`
-# --------------------------------------
 # The :class:`~openturns.RandomWalkMetropolisHastings` class can be used to sample from the posterior distribution. It relies on the following objects:
 #
 # - The conditional density :math:`p(t_{1:n}|f_{1:n}, \alpha, \beta)` will be defined as a :class:`~openturns.PythonDistribution`.
