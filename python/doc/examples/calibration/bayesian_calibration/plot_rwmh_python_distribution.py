@@ -70,7 +70,7 @@ ot.RandomGenerator.SetSeed(123)
 
 class CensoredWeibull(ot.PythonDistribution):
     """
-    Right-censored Weibull log-PDF calucation
+    Right-censored Weibull log-PDF calculation
     Each data point x is assumed 2D, with:
         x[0]: observed functioning time
         x[1]: nature of x[0]: 
