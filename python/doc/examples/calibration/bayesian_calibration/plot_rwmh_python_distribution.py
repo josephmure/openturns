@@ -23,7 +23,8 @@ Posterior sampling using a PythonDistribution
 #
 # Furthermore, assume that the prior information available on :math:`\alpha, \beta` is represented by independent prior laws, whose respective densities are denoted by :math:`\pi(\alpha)` and :math:`\pi(\beta).`
 #
-# Then, the posterior distribution of :math:`(\alpha, \beta)`, representing the update of the prior information on :math:`(\alpha, \beta)` given the dataset has a PDF which is proportional to:
+# The posterior distribution of :math:`(\alpha, \beta)` represents the update of the prior information on :math:`(\alpha, \beta)` given the dataset.
+# Its PDF is known up to a multiplicative constant:
 #
 #
 # .. math::
