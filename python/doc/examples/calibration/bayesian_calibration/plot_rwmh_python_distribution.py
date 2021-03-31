@@ -32,6 +32,8 @@ Posterior sampling using a PythonDistribution
 #
 # Set up the :class:`PythonDistribution`
 # --------------------------------------
+# Set up the :class:`PythonDistribution`
+# --------------------------------------
 #
 # The :class:`~openturns.RandomWalkMetropolisHastings` class can be used to sample from the posterior distribution. It relies on the following objects:
 #
