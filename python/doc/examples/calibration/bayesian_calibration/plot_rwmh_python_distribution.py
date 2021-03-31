@@ -159,8 +159,6 @@ proposal.append( ot.Normal(0., 0.1 * ( alpha_max - alpha_min ) ) )
 proposal.append( ot.Normal(0., 0.1 * np.sqrt( a_beta / b_beta**2 ) ) )
 
 # %%
-# All set! Now launch the posterior sampling algorithm
-#
 # Sample from the posterior distribution
 # --------------------------------------
 
