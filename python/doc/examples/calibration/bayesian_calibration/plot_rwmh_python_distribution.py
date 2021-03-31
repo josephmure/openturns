@@ -86,6 +86,8 @@ class CensoredWeibull(ot.PythonDistribution):
         return ot.Interval([0, 0], [1, 1], [True]*2, [False, True])
 
     def computeLogPDF(self, x):
+        if not (self.alpha>0.0 and self.beta>0.0):
+            return -np.inf
         log_pdf = -( x[0] / self.beta )**self.alpha
         log_pdf += ( self.alpha - 1 ) * np.log( x[0] / self.beta ) * x[1]
         log_pdf += np.log( self.alpha / self.beta ) * x[1]
