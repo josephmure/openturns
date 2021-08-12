@@ -7,6 +7,7 @@
 ==== Major changes ====
 
 ==== New classes ====
+ * DistanceToDomainFunction
 
 ==== API changes ====
  * Removed deprecated MultiStart::setStartingPoints/getStartingPoints
@@ -14,6 +15,7 @@
  * Removed deprecated coupling_tools.execute is_shell/workdir/shell_exe/check_exit_code arguments
  * RandomVector::get/setParameter and getParameterDescription available to PythonRandomVector
  * IndicatorFunction constructor takes a Domain as input
+ * Intervals and DomainUnions get new method computeDistanceToDomain(Point or Sample)
 
 === Documentation ===
 
