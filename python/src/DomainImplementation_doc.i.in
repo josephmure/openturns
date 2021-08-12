@@ -13,7 +13,7 @@ A Domain object can be created through its derived classes:
 
 - :class:`~openturns.DomainUnion`
 
-- :class:`~openturns.DomainDisjonctiveUnion`
+- :class:`~openturns.DomainDisjunctiveUnion`
 
 - :class:`~openturns.DomainIntersection`
 
@@ -42,6 +42,30 @@ isInside : bool
 %enddef
 %feature("docstring") OT::DomainImplementation::contains
 OT_Domain_contains_doc
+
+// ---------------------------------------------------------------------
+
+%define OT_Domain_computeDistanceToDomain_doc
+"Compute the Euclidean distance of a given point to the domain.
+
+Notes
+-----
+For the time being, this method is only usable if the domain
+is an :class:`~openturns.Interval` or a :class:`DomainUnion`
+of two or more domains of type :class:`~openturns.Interval`.
+
+Parameters
+----------
+point : sequence of float
+    Point with the same dimension as the current domain's dimension.
+
+Returns
+-------
+distance : float
+    Euclidean distance of the point to the domain."
+%enddef
+%feature("docstring") OT::DomainImplementation::computeDistanceToDomain
+OT_Domain_computeDistanceToDomain_doc
 
 // ---------------------------------------------------------------------
 

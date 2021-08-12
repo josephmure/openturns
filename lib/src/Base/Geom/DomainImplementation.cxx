@@ -73,6 +73,21 @@ DomainImplementation::BoolCollection DomainImplementation::contains(const Sample
   return result;
 }
 
+/* Compute the Euclidean distance from a given point to the domain */
+Scalar DomainImplementation::computeDistanceToDomain(const Point & ) const
+{
+  throw NotYetImplementedException(HERE) << "Sorry, " << getClassName() << "::computeDistanceToDomain(Point) is not yet implemented.";
+}
+
+/* Compute the Euclidean distance from given points to the domain */
+Sample DomainImplementation::computeDistanceToDomain(const Sample & sample) const
+{
+  Sample result(sample.getSize(), 1);
+  for(UnsignedInteger i = 0; i < sample.getSize(); ++i)
+    result(i, 0) = computeDistanceToDomain(sample[i]);
+  return result;
+}
+
 /* Get the dimension of the domain*/
 UnsignedInteger DomainImplementation::getDimension() const
 {

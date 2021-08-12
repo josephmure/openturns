@@ -59,6 +59,18 @@ Domain::BoolCollection Domain::contains(const Sample & sample) const
   return getImplementation()->contains(sample);
 }
 
+/* Compute the Euclidean distance from a given point to the domain */
+Scalar Domain::computeDistanceToDomain(const Point & point) const
+{
+  return getImplementation()->computeDistanceToDomain(point);
+}
+
+/* Compute the Euclidean distance from given points to the domain */
+Sample Domain::computeDistanceToDomain(const Sample & sample) const
+{
+  return getImplementation()->computeDistanceToDomain(sample);
+}
+
 String Domain::__repr__() const
 {
   return getImplementation()->__repr__();
