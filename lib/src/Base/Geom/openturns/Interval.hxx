@@ -102,6 +102,9 @@ public:
   /** Product operator */
   Interval operator *(const Scalar scalar) const;
 
+  /** Compute the Euclidean distance from a given point to the domain */
+  Scalar computeDistanceToDomain(const Point & point) const;
+
   /**  In-place product operator */
   Interval & operator *=(const Scalar scalar);
 
