@@ -104,6 +104,17 @@ Bool DomainUnion::operator != (const DomainUnion & other) const
   return !operator==(other);
 }
 
+/* Compute the Euclidean distance from a given point to the domain */
+Scalar DomainUnion::computeDistanceToDomain(const Point & point) const
+{
+    Scalar distance = 0.0;
+    Scalar distanceLeft = left_.computeDistanceToDomain(point);
+    Scalar distanceRight = right_.computeDistanceToDomain(point);
+
+    distance = std::min(distanceLeft,distanceRight);
+    return distance;
+}
+
 /* Method save() stores the object through the StorageManager */
 void DomainUnion::save(Advocate & adv) const
 {

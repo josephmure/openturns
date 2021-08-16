@@ -56,6 +56,9 @@ public:
   /** Check if the given points are inside this domain */
   BoolCollection contains(const Sample & sample) const override;
 
+  /** Compute the Euclidean distance from a given point to the domain */
+  Scalar computeDistanceToDomain(const Point & point) const override;
+
   /** Comparison operator */
   Bool operator == (const DomainUnion & other) const;
   Bool operator != (const DomainUnion & other) const;
