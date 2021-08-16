@@ -59,7 +59,7 @@ String DomainImplementation::__str__(const String & ) const
 }
 
 /* Check if the given point is inside of the domain */
-Bool DomainImplementation::contains(const Point & point) const
+Bool DomainImplementation::contains(const Point & ) const
 {
   throw NotYetImplementedException(HERE) << "In DomainImplementation::contains(const Point & point) const";
 }
@@ -74,7 +74,7 @@ DomainImplementation::BoolCollection DomainImplementation::contains(const Sample
 }
 
 /* Compute the Euclidean distance from a given point to the domain */
-Scalar DomainImplementation::computeDistanceToDomain(const Point & point) const
+Scalar DomainImplementation::computeDistanceToDomain(const Point & ) const
 {
   throw NotYetImplementedException(HERE) << "Sorry, " << getClassName() << "::computeDistanceToDomain(Point) is not yet implemented.";
 }

@@ -110,15 +110,15 @@ Scalar Interval::computeDistanceToDomain(const Point & point) const
     BoolCollection finiteLowerBound = getFiniteLowerBound();
     BoolCollection finiteUpperBound = getFiniteUpperBound();
 
-    Scalar squared_distance = 0.0;
+    Scalar squaredDistance = 0.0;
 
     for (UnsignedInteger i = 0; i < intervalDimension; ++i)
 {
-    if (finiteLowerBound[i] and point[i]<lowerBound[i]) squared_distance += (lowerBound[i] - point[i])*(lowerBound[i] - point[i]);
-    else if (finiteUpperBound[i] and point[i]>upperBound[i]) squared_distance += (point[i] - upperBound[i])*(point[i] - upperBound[i]);
+    if (finiteLowerBound[i] and point[i]<lowerBound[i]) squaredDistance += (lowerBound[i] - point[i])*(lowerBound[i] - point[i]);
+    else if (finiteUpperBound[i] and point[i]>upperBound[i]) squaredDistance += (point[i] - upperBound[i])*(point[i] - upperBound[i]);
 }
 
-    return sqrt(squared_distance);
+    return sqrt(squaredDistance);
 }
 
 /* Returns the interval equals to the intersection between the interval and another one */
