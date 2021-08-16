@@ -114,8 +114,8 @@ Scalar Interval::computeDistanceToDomain(const Point & point) const
 
     for (UnsignedInteger i = 0; i < intervalDimension; ++i)
 {
-    if (finiteLowerBound[i] and point[i]<lowerBound[i]) squaredDistance += (lowerBound[i] - point[i])*(lowerBound[i] - point[i]);
-    else if (finiteUpperBound[i] and point[i]>upperBound[i]) squaredDistance += (point[i] - upperBound[i])*(point[i] - upperBound[i]);
+    if (finiteLowerBound[i] && point[i]<lowerBound[i]) squaredDistance += (lowerBound[i] - point[i])*(lowerBound[i] - point[i]);
+    else if (finiteUpperBound[i] && point[i]>upperBound[i]) squaredDistance += (point[i] - upperBound[i])*(point[i] - upperBound[i]);
 }
 
     return sqrt(squaredDistance);
