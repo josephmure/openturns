@@ -92,7 +92,7 @@ HSICEstimatorImplementation * HSICEstimatorImplementation::clone() const
 }
 
 /* Compute the weight matrix from the weight function */
-SquareMatrix HSICEstimatorImplementation::computeWeightMatrix(const Sample & Y) const
+SquareMatrix HSICEstimatorImplementation::computeWeightMatrix(const Sample&) const
 {
     throw NotYetImplementedException(HERE) << "Use the class HSICEstimatorConditionalSensitivity in order to perform conditional sensitivity analysis";
 }
