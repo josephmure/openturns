@@ -25,3 +25,28 @@ div.sphx-glr-download-link-note {
 pre, div[class*="highlight-"] {
   clear: left;
 }
+
+/* https://stackoverflow.com/questions/44793811/change-the-colors-of-the-sphinx-read-the-docs-theme */
+/* Sidebar header (and topbar for mobile) */
+.wy-side-nav-search, .wy-nav-top {
+    background: #0b750a;
+}
+
+/* Sidebar
+.wy-nav-side {
+    background: #996515;
+} */
+
+/* -- general body styles --------------------------------------------------- 
+
+
+a {
+    color: #256C24;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #33842D;
+    text-decoration: none;
+}
+*/
