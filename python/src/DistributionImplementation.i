@@ -36,6 +36,7 @@
 %ignore OT::DistributionImplementation::computeProbabilityContinuous1D;
 %ignore OT::DistributionImplementation::computeProbabilityDiscrete;
 
+%feature("director") DistributionImplementation;
 
 %include openturns/DistributionImplementation.hxx
 
