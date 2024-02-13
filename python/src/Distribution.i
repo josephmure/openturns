@@ -16,6 +16,8 @@ OTTypedCollectionInterfaceObjectHelper(Distribution)
 %ignore OT::Distribution::setWeight;
 %ignore OT::Distribution::getWeight;
 
+%feature("director") Distribution;
+
 %include openturns/Distribution.hxx
 
 namespace OT {
