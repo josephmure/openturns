@@ -6,6 +6,7 @@
     To use it, import the ``openturns.experimental`` submodule.
 
 
+TODO : write a few lines explaining the link with Directional Sampling.
 This class implements the line sampling algorithm from [koutsourelakis2004]_ with adaptation
 of the important direction from [angelis2015]_, which is also known as adaptive line sampling.
 
