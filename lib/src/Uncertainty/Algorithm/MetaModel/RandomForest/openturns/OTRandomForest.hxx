@@ -1,6 +1,6 @@
 //                                               -*- C++ -*-
 /**
- *  @brief The external header file of OpenTURNS for subdir MetaModel
+ *  @brief The external header file of OpenTURNS for subdir RandomForest
  *
  *  Copyright 2005-2026 Airbus-EDF-IMACS-ONERA-Phimeca
  *
@@ -19,15 +19,9 @@
  *
  */
 
-#ifndef OPENTURNS_OTMETAMODEL_HXX
-#define OPENTURNS_OTMETAMODEL_HXX
+#ifndef OPENTURNS_OTRANDOMFOREST_HXX
+#define OPENTURNS_OTRANDOMFOREST_HXX
 
-#include "openturns/OTFunctionalChaos.hxx"
-#include "openturns/OTKriging.hxx"
-#include "openturns/OTLinearModel.hxx"
-#include "openturns/OTRandomForest.hxx"
+#include "openturns/RandomForestPrototype.hxx"
 
-#include "openturns/MetaModelAlgorithm.hxx"
-#include "openturns/MetaModelValidation.hxx"
-
-#endif /* OPENTURNS_OTMETAMODEL_HXX */
+#endif /* OPENTURNS_OTRANDOMFOREST_HXX */

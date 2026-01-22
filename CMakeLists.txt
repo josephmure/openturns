@@ -38,6 +38,9 @@ option (USE_NANOFLANN                "Use nanoflann for Nearest Neighbor search"
 option (BUILD_PYTHON                 "Build the python module for the library"                               ON)
 option (BUILD_SHARED_LIBS            "Build shared libraries"                                                ON)
 
+option (USE_RANGER                   "Use Ranger for random forest algorithms"                               ON)
+
+
 # Defines our own module path
 list (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -52,6 +55,11 @@ set (OPENTURNS_CONFIG_CMAKE_PATH ${CMAKE_INSTALL_LIBDIR}/cmake/openturns CACHE S
 set (OPENTURNS_SYSCONFIG_PATH ${CMAKE_INSTALL_SYSCONFDIR} CACHE STRING "The directory where the configuration file is installed")
 set (OPENTURNS_DATA_PATH ${CMAKE_INSTALL_DATAROOTDIR} CACHE STRING "The directory where the common files are installed")
 set (OPENTURNS_DOC_PATH ${CMAKE_INSTALL_DOCDIR} CACHE STRING "The directory where the license files are installed")
+
+
+set (CMAKE_CXX_STANDARD 14)
+set (CMAKE_CXX_STANDARD_REQUIRED TRUE)
+
 
 if (WIN32)
   set (DEFAULT_TMP TEMP)
@@ -221,6 +229,16 @@ if (USE_BOOST)
     endif ()
   endif ()
 endif ()
+
+if (USE_RANGER)
+  find_package (Ranger)
+  if (RANGER_FOUND)
+    add_definitions (-DOPENTURNS_HAVE_RANGER)
+    include_directories (${RANGER_INCLUDE_DIRS})
+    list (APPEND OPENTURNS_PRIVATE_LIBRARIES ${RANGER_LIBRARIES})
+ endif ()
+endif ()
+
 
 if (USE_CUBA)
   find_package (Cuba)

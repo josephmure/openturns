@@ -66,6 +66,7 @@
 %include LinearModelStepwiseAlgorithm.i
 %include LinearModelAlgorithm.i
 %include LinearModelAnalysis.i
+%include RandomForestPrototype.i
 
 /* Uncertainty/Model */
 %include RandomVector.i

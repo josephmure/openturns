@@ -66,7 +66,7 @@ view = otv.View(graph)
 # Create a training sample
 
 # %%
-sampleSize = 100
+sampleSize = 10000
 inputTrain = im.distribution.getSample(sampleSize)
 outputTrain = im.model(inputTrain)
 
@@ -132,6 +132,12 @@ metamodel = chaosResult.getMetaModel()
 # In order to validate the metamodel, we generate a test sample.
 
 # %%
+# Random forest
+
+rf = ot.RandomForestPrototype(inputTrain, outputTrain)
+rf.run()
+
+# %%
 n_valid = 1000
 inputTest = im.distribution.getSample(n_valid)
 outputTest = im.model(inputTest)
@@ -141,6 +147,14 @@ r2Score = val.computeR2Score()[0]
 r2Score
 
 # %%
+# Validate random forest
+
+rf_predictions = rf.predict(inputTest)
+val_rf = ot.MetaModelValidation(outputTest, rf_predictions)
+r2Score_rf = val_rf.computeR2Score()[0]
+r2Score_rf
+
+# %%
 # The :math:`R^2` is very close to 1: the metamodel is accurate.
 
 # %%
@@ -148,6 +162,10 @@ graph = val.drawValidation()
 graph.setTitle("R2=%.2f%%" % (r2Score * 100))
 view = otv.View(graph)
 
+# %%
+graph_rf = val_rf.drawValidation()
+graph_rf.setTitle("R2 RandomForest =%.2f%%" % (r2Score_rf * 100))
+view_rf = otv.View(graph_rf)
 # %%
 # The metamodel has a good predictivity, since the points are almost on the first diagonal.
 
