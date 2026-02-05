@@ -50,7 +50,7 @@ GaussianProcessRegressionCrossValidation::GaussianProcessRegressionCrossValidati
 GaussianProcessRegressionCrossValidation::GaussianProcessRegressionCrossValidation(const GaussianProcessRegressionResult & gaussianProcessRegressionResult,
     const LeaveOneOutSplitter & splitter)
   : MetaModelValidation(gaussianProcessRegressionResult.getOutputSample()
-                        , ComputeMetamodelLeaveOneOutPredictions(gaussianProcessRegressionResult))
+                        , computeGPRLeaveOneOutPredictions(gaussianProcessRegressionResult))
   , gaussianProcessRegressionResult_(gaussianProcessRegressionResult)
   , splitter_ (splitter)
 {
@@ -101,8 +101,14 @@ SplitterImplementation GaussianProcessRegressionCrossValidation::getSplitter() c
   return splitter_;
 }
 
+/* Get the Leave-One-Out prediction standard deviations */
+Point GaussianProcessRegressionCrossValidation::getLeaveOneOutStandardDeviations() const
+{
+  return leaveOneOutStandardDeviations_;
+}
+
 /* Compute cross-validation Leave-One-Out metamodel predictions */
-Sample GaussianProcessRegressionCrossValidation::ComputeMetamodelLeaveOneOutPredictions(
+Sample GaussianProcessRegressionCrossValidation::computeGPRLeaveOneOutPredictions(
   const GaussianProcessRegressionResult & gaussianProcessRegressionResult)
 {
   const Sample outputSample(gaussianProcessRegressionResult.getOutputSample());
@@ -157,8 +163,14 @@ Sample GaussianProcessRegressionCrossValidation::ComputeMetamodelLeaveOneOutPred
     scales -= auxiliary.getImplementation()->genVectProd(Point(basisSize, 1.0), true);
   }
 
-  // Compute scaled residuals
-  for (UnsignedInteger i = 0; i < outputSample.getSize(); ++i) residuals[i] /= scales[i];
+  // Each scale is actually the squared inverse of an LOO prediction standard deviation.
+  // We store the standard deviations and rescale the residuals.
+  leaveOneOutStandardDeviations_.resize(outputSample.getSize());
+  for (UnsignedInteger i = 0; i < outputSample.getSize(); ++i)
+  {
+    leaveOneOutStandardDeviations_[i] = 1.0 / sqrt(scales[i]); // store LOO prediction standard deviation
+    residuals[i] /= scales[i]; // compute scaled residual
+  }
 
   // LOO predictions computed from the LOO residuals
   return outputSample - Sample::BuildFromPoint(residuals);
@@ -178,6 +190,7 @@ void GaussianProcessRegressionCrossValidation::save(Advocate & adv) const
   MetaModelValidation::save(adv);
   adv.saveAttribute("gaussianProcessRegressionResult_", gaussianProcessRegressionResult_);
   adv.saveAttribute("splitter_", splitter_ );
+  adv.saveAttribute("leaveOneOutStandardDeviations_", leaveOneOutStandardDeviations_);
 }
 
 /* Method load() reloads the object from the StorageManager */
@@ -186,6 +199,7 @@ void GaussianProcessRegressionCrossValidation::load(Advocate & adv)
   MetaModelValidation::load(adv);
   adv.loadAttribute("gaussianProcessRegressionResult_", gaussianProcessRegressionResult_);
   adv.loadAttribute("splitter_", splitter_ );
+  adv.loadAttribute("leaveOneOutStandardDeviations_", leaveOneOutStandardDeviations_);
 }
 
 END_NAMESPACE_OPENTURNS
