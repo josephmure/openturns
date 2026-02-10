@@ -49,8 +49,7 @@ GaussianProcessRegressionCrossValidation::GaussianProcessRegressionCrossValidati
 /* LOO constructor */
 GaussianProcessRegressionCrossValidation::GaussianProcessRegressionCrossValidation(const GaussianProcessRegressionResult & gaussianProcessRegressionResult,
     const LeaveOneOutSplitter & splitter)
-  : MetaModelValidation(gaussianProcessRegressionResult.getOutputSample()
-                        , computeGPRLeaveOneOutPredictions(gaussianProcessRegressionResult))
+  : MetaModelValidation()
   , gaussianProcessRegressionResult_(gaussianProcessRegressionResult)
   , splitter_ (splitter)
 {
@@ -60,6 +59,10 @@ GaussianProcessRegressionCrossValidation::GaussianProcessRegressionCrossValidati
   if ((splitter_.getN() != sampleSize))
     throw InvalidArgumentException(HERE) << "The parameter N in the splitter is " << splitter_.getN()
                                          << " but the sample size is " << sampleSize;
+  // set the output & loo samples
+  outputSample_ = gaussianProcessRegressionResult.getOutputSample();
+  metaModelPredictions_ = computeGPRLeaveOneOutPredictions(gaussianProcessRegressionResult);
+  initialize();
 }
 
 /* K-Fold constructor */
@@ -168,7 +171,7 @@ Sample GaussianProcessRegressionCrossValidation::computeGPRLeaveOneOutPrediction
   leaveOneOutStandardDeviations_.resize(outputSample.getSize());
   for (UnsignedInteger i = 0; i < outputSample.getSize(); ++i)
   {
-    leaveOneOutStandardDeviations_[i] = 1.0 / sqrt(scales[i]); // store LOO prediction standard deviation
+    leaveOneOutStandardDeviations_[i] = 1.0 / std::sqrt(scales[i]); // store LOO prediction standard deviation
     residuals[i] /= scales[i]; // compute scaled residual
   }
 
